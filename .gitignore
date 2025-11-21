@@ -3,3 +3,9 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+.idea/.idea.CYOTApps/.idea/indexLayout.xml
+.idea/.idea.CYOTApps/.idea/vcs.xml
+.idea/.idea.CYOTApps/.idea/material_theme_project_new.xml
+FlowApplicationApp/wwwroot/lib/bootstrap/.DS_Store
+.gitignore
+FlowApplicationApp/wwwroot/lib/bootstrap/dist/css/.DS_Store
