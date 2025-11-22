@@ -2,7 +2,54 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero-section {
+        height: 100vh;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .hero-image {
+        width: 50%;
+        height: 100%;
+        background-image: url('/img/joyfulsinging.jpg');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.4;
+        flex-shrink: 0;
+    }
+    
+    .hero-content {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        flex-shrink: 0;
+    }
+    
+    @@media (max-width: 768px) {
+        .hero-section {
+            flex-direction: column;
+        }
+        
+        .hero-image,
+        .hero-content {
+            width: 100%;
+            height: 50vh;
+        }
+    }
+</style>
+
+<div class="hero-section">
+    <div class="hero-image"></div>
+    <div class="hero-content">
+        <h1 class="display-3 fw-bold mb-4">Welcome to a new Beginning with Flow!</h1>
+        <p class="lead mb-4">Flow is the music arm of the <strong>Courtyard of Truth</strong>. Members of flow are people who sense a divine call to minister to the Lord and His people through music.</p>
+        <p>If you feel called to serve in this ministry, we invite you to fill this form <a class="text-danger" asp-controller="" asp-action="Index">here</a>. Audition dates will be announced soon! We welcome all who wish to join us in this journey.</p>
+    </div>
 </div>
