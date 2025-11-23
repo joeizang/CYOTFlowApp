@@ -8,14 +8,21 @@ using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
-var env = DotEnv.Read();
-
-// Add services to the container.
-// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-//                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-var connectionString = env["POSTGRES_CONN_STR"] ?? throw new InvalidOperationException("Connection string 'POSTGRES_CONN_STR' not found.");
+var env = DotEnv.Fluent().WithEnvFiles(".env").Read();
+Console.WriteLine(env?["POSTGRES_CONN_STR"]);
+var connectionString = env?["POSTGRES_CONN_STR"] ?? throw new InvalidOperationException("Connection string 'POSTGRES_CONN_STR' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
+    .UseSeeding((context, _) =>
+    {
+      var roles = context.Set<FlowRoles>().Any();
+
+      if(!roles)
+        {
+            context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
+            context.SaveChanges();
+        }
+    })
     .UseAsyncSeeding(async (context, _, token) =>
     {
       var roles = await context.Set<FlowRoles>().AnyAsync(token).ConfigureAwait(false);
@@ -52,6 +59,12 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+await using (var scope = app.Services.CreateAsyncScope())
+await using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+{
+    await dbContext.Database.EnsureCreatedAsync();
+}
 
 app.MapControllerRoute(
         name: "default",

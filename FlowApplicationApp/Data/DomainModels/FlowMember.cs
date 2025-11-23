@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
 namespace FlowApplicationApp.Data.DomainModels;
-public class FlowMember : IdentityUser
+public class FlowMember : IdentityUser<Guid>
 {
         public string FirstName { get; set; } = string.Empty;
 
