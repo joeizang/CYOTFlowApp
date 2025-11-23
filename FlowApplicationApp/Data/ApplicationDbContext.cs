@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowApplicationApp.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<FlowMember, FlowRoles, Guid>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {

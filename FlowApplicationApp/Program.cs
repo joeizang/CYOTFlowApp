@@ -35,9 +35,30 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<FlowMember>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<FlowRoles>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<IdentityOptions>(opt =>
+{
+   opt.Password.RequireDigit = true;
+   opt.Password.RequireLowercase = true;
+    opt.Password.RequireUppercase = true;
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.Password.RequiredLength = 8;
+    opt.Password.RequiredUniqueChars = 1;
+    // Lockout settings.
+    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    opt.Lockout.MaxFailedAccessAttempts = 10;
+    opt.Lockout.AllowedForNewUsers = true;
+
+    // User settings.
+    opt.User.AllowedUserNameCharacters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    opt.User.RequireUniqueEmail = true;
+
+});
 
 var app = builder.Build();
 
