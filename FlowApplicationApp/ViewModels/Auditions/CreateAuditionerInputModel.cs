@@ -1,0 +1,64 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace FlowApplicationApp.ViewModels.Auditions;
+
+public class CreateAuditionerInputModel
+{
+    [Required]
+    [MaxLength(50)]
+    [Display(Name = "First Name")]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(50)]
+    [Display(Name = "Last Name")]
+    public string LastName { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    [DataType(DataType.Date)]
+    [Display(Name = "Date of Birth")]
+    public DateOnly DoB { get; set; }
+
+    [Required]
+    [MaxLength(1000)]
+    [Display(Name = "Biography")]
+    public string Bio { get; set; } = string.Empty;
+
+    [Required]
+    [DataType(DataType.Date)]
+    [Display(Name = "When did you become born again?")]
+    public DateOnly BornAgainDate { get; set; }
+
+    [Required]
+    [Display(Name = "Add a Profile Image")]
+    public IFormFile ProfileImage { get; set; } = null!;
+
+    [Required]
+    [DataType(DataType.Date)]
+    [Display(Name = "When were you water baptized?")]
+    public DateOnly WaterBaptismDate { get; set; }
+
+    [Required]
+    [DataType(DataType.Date)]
+    [Display(Name = "When were you baptized in the Holy Spirit?")]
+    public DateOnly HolySpiritBaptismDate { get; set; }
+
+    [Required]
+    [Display(Name = "Do you hear God speaking to you?")]
+    public bool HearsGod { get; set; }
+
+    [Required]
+    [MaxLength(500)]
+    [Display(Name = "How did you start hearing God?")]
+    public string HowTheyStartedHearingGod { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(1000)]
+    [Display(Name = "Why do you want to join Flow?")]
+    public string CoverSpeech { get; set; } = string.Empty;
+}
