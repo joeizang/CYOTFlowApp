@@ -19,11 +19,13 @@ namespace FlowApplicationApp.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateAuditioner([Bind]CreateAuditionerInputModel inputModel)
         {
