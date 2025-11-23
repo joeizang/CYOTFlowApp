@@ -31,6 +31,9 @@
 
     <ItemGroup>
       <Folder Include="Data\ModelConfigurations\" />
+      <Folder Include="Infrastructure/" />
+      <Folder Include="Infrastructure/Extensions/" />
+      <Folder Include="Infrastructure/Validations/" />
     </ItemGroup>
 
 </Project>

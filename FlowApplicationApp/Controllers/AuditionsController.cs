@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace FlowApplicationApp.Controllers
 {
     [Route("[controller]")]
-    public class AuditionsController : Controller
+    public sealed class AuditionsController : Controller
     {
         private readonly ILogger<AuditionsController> _logger;
 
