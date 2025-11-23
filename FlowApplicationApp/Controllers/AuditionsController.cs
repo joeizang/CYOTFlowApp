@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using FlowApplicationApp.ViewModels.Auditions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +21,13 @@ namespace FlowApplicationApp.Controllers
 
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateAuditioner([Bind]CreateAuditionerInputModel inputModel)
+        {
+            var testing = inputModel;
             return View();
         }
     }
