@@ -12,3 +12,4 @@ FlowApplicationApp/wwwroot/lib/bootstrap/dist/css/.DS_Store
 FlowApplicationApp/wwwroot/.DS_Store
 FlowApplicationApp/.DS_Store
 .DS_Store
+.env
