@@ -21,10 +21,19 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active text-warning" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Auditions" ? "active text-warning" : "")" asp-area="" asp-controller="Auditions" asp-action="Index">Auditions</a>
+                    </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "FlowMembers" ? "active text-warning" : "")" asp-area="" asp-controller="FlowMembers" asp-action="Index">Flow Members</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Privacy" ? "active text-warning" : "")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                 </ul>
                 <partial name="_LoginPartial"/>
