@@ -24,15 +24,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
             context.SaveChanges();
         }
+
+        if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
+        {
+            context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
+            context.SaveChanges();
+        }
     })
     .UseAsyncSeeding(async (context, _, token) =>
     {
-      var roles = await context.Set<FlowRoles>().AnyAsync(token).ConfigureAwait(false);
+        var roles = await context.Set<FlowRoles>().AnyAsync(token).ConfigureAwait(false);
 
-      if(!roles)
+        if(!roles)
         {
             context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
             await context.SaveChangesAsync(token).ConfigureAwait(false);
+        }
+        if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
+        {
+            context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
+            context.SaveChanges();
         }
     }));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -84,7 +95,8 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 var envr = app.Environment;
-var properPath = Path.Combine(envr.ContentRootPath, "../../uploadfiles");
+// var properPath = Path.Combine(envr.ContentRootPath, "../../uploadFiles");
+var properPath = Path.GetFullPath(Path.Combine(envr.ContentRootPath, "../../uploadFiles"));
 
 if(!Directory.Exists(properPath))
 {
@@ -93,7 +105,9 @@ if(!Directory.Exists(properPath))
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(properPath)// map to an external folder
+    FileProvider = new PhysicalFileProvider(properPath),
+    RequestPath = "/uploads"
+
 });
 await using (var scope = app.Services.CreateAsyncScope())
 await using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())

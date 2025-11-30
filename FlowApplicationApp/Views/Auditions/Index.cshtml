@@ -172,10 +172,17 @@
                 </div>
             </div>
             
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber" class="form-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
             </div>
             
             <div class="mb-3">
@@ -198,8 +205,11 @@
             
             <div class="mb-3">
                 <label asp-for="ProfileImage" class="form-label"></label>
-                <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
-                <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                <div class="file-upload">
+                    <input asp-for="ProfileImage" class="form-control custom-file-input" type="file" accept="image/*" />
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                    <p class="form-text">Accepted image types: .png, .webp. Maximum size: 750 KB.</p>
+                </div>
             </div>
             
             <div class="mb-3">

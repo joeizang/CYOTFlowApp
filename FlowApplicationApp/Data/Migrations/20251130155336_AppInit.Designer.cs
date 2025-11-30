@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlowApplicationApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251123165908_AppInit")]
+    [Migration("20251130155336_AppInit")]
     partial class AppInit
     {
         /// <inheritdoc />
@@ -97,6 +97,10 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<DateOnly>("WaterBaptismDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -212,6 +216,10 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<DateOnly>("WaterBaptismDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

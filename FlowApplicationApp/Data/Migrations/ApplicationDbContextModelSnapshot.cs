@@ -95,6 +95,10 @@ namespace FlowApplicationApp.Data.Migrations
                     b.Property<DateOnly>("WaterBaptismDate")
                         .HasColumnType("date");
 
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("FlowAuditioners");
@@ -209,6 +213,10 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<DateOnly>("WaterBaptismDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

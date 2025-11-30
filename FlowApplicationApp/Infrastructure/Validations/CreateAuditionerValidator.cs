@@ -49,5 +49,8 @@ public class CreateAuditionerValidator : AbstractValidator<CreateAuditionerInput
                 var fileExtension = System.IO.Path.GetExtension(file.FileName).ToLower();
                 return allowedExtensions.Contains(fileExtension);
             }).WithMessage("accepted images types have the .png or .webp extensions");
+        RuleFor(x => x.ProfileImage)
+            .Must(file => file.Length <= 750 * 1024) // 0.75 MB
+            .WithMessage("Profile image size must not be larger than 750 KB.");
     }
 }
