@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FlowApplicationApp.Data.DomainModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace FlowApplicationApp.Models;
 
@@ -11,36 +12,44 @@ public static class SeedClass
     public static FlowRoles[] PrepareRolesSeed()
     {
         return new FlowRoles[7] {
-            new() { RoleName = "Music Director", RoleDescription = "This is appointed leader of flow as carried out by the Church leadership", Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid()},
+            new() { RoleName = "Music Director",
+                Name = "Music-Director",
+                RoleDescription = "This is appointed leader of flow as carried out by the Church leadership", Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid()},
             new() {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Deputy Music Director",
+                Name = "Deputy-Music-Director",
                 RoleDescription = "Assists the Director and shares the load with the director!"
             },
             new() {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Admin",
+                Name = "Admin",
                 RoleDescription = "Application Administrator with full access"
             },
             new() {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Member",
+                Name = "Member",
                 RoleDescription = "Assists the Director and shares the load with the director!"
             },
             new() {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Vocalist",
+                Name = "Vocalist",
                 RoleDescription = "Assists the Director and shares the load with the director!"
             },
             new() {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Instrumentalist",
+                Name = "Instrumentalist",
                 RoleDescription = "Assists the Director and shares the load with the director!"
             },
             new()
             {
                 Id = Ulid.NewUlid(DateTimeOffset.Now).ToGuid(),
                 RoleName = "Spiritual Lead",
+                Name = "",
                 RoleDescription = "Provides spiritual leadership and oversight to the flow team"
             }
 
@@ -49,6 +58,7 @@ public static class SeedClass
 
     public static FlowMember[] PrepareAdminMemberSeed()
     {
+        UserManager<FlowMember> userManager = null!; // Placeholder to avoid errors
         return
         [
             new()
@@ -57,8 +67,7 @@ public static class SeedClass
                 FirstName = "Joseph",
                 LastName = "Izang",
                 Email = "josephizang@gmail.com",
-                UserName = "admin",
-                PasswordHash = "ForWeCanDoNothing@gainstTheTruth-2026",
+                UserName = "josephizang@gmail.com",
                 DoB = new DateOnly(1990, 1, 1),
                 WhatsAppNumber = "08189011535",
                 Bio = "Courtyard of Truth Administrator Account",
@@ -72,6 +81,7 @@ public static class SeedClass
                 CreatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 IsActive = true,
+                EmailConfirmed = true,
                 Roles = [PrepareRolesSeed().Single(x => x.RoleName == "Admin")]
             },
             new()
@@ -80,8 +90,7 @@ public static class SeedClass
                 FirstName = "Sydney",
                 LastName = "Udoh",
                 Email = "sydney.udoh@gmail.com",
-                UserName = "sydney",
-                PasswordHash = "ForWeCanDoNothing@gainstTheTruth-2026",
+                UserName = "sydney.udoh@gmail.com",
                 DoB = new DateOnly(1990, 1, 1),
                 WhatsAppNumber = "08031234567",
                 Bio = "Courtyard of Truth Flow Director Account",
@@ -95,6 +104,7 @@ public static class SeedClass
                 CreatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 IsActive = true,
+                EmailConfirmed = true,
                 Roles = [PrepareRolesSeed().First(x => x.RoleName == "Admin")]
             },
             new()
@@ -103,8 +113,7 @@ public static class SeedClass
                 FirstName = "IfeOluwa",
                 LastName = "Bamgboye",
                 Email = "ifeoluwa.bamgboye@gmail.com",
-                UserName = "ifeoluwa",
-                PasswordHash = "ForWeCanDoNothing@gainstTheTruth-2026",
+                UserName = "ifeoluwa.bamgboye@gmail.com",
                 DoB = new DateOnly(1975, 12, 1),
                 WhatsAppNumber = "08039876543",
                 Bio = "Courtyard of Truth Flow Spiritual Lead Account",
@@ -118,6 +127,7 @@ public static class SeedClass
                 CreatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
                 IsActive = true,
+                EmailConfirmed = true,
                 Roles = [PrepareRolesSeed().First(x => x.RoleName == "Admin")]
             }
         ];

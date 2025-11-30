@@ -191,8 +191,9 @@
                                         </div>
                                     </div>
                                 }
+                                @User.Identity?.Name
 
-                                @if (User.IsInRole("Admin"))
+                                @if (User.Identity?.IsAuthenticated  == true && User.IsInRole("Admin"))
                                 {
                                     <div class="mt-4 d-flex gap-2">
                                         <a asp-action="Index" class="btn btn-secondary btn-lg" style="border-radius: 0.75rem;">

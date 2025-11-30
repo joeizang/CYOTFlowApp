@@ -16,25 +16,15 @@ namespace FlowApplicationApp.Controllers
 {
     [Route("[controller]")]
     [AutoValidateAntiforgeryToken]
-    public sealed class AuditionsController : Controller
+    public sealed class AuditionsController(
+        ILogger<AuditionsController> logger,
+        IValidator<CreateAuditionerInputModel> validator,
+        IWebHostEnvironment hosting,
+        ApplicationDbContext context)
+        : Controller
     {
-        private readonly ILogger<AuditionsController> _logger;
-        private readonly IValidator<CreateAuditionerInputModel> _validator;
-        private readonly IWebHostEnvironment _host;
-        private readonly ApplicationDbContext _context;
-
-        public AuditionsController(
-            ILogger<AuditionsController> logger,
-            IValidator<CreateAuditionerInputModel> validator,
-            IWebHostEnvironment hosting,
-            ApplicationDbContext context
-        )
-        {
-            _logger = logger;
-            _validator = validator;
-            _host = hosting;
-            _context = context;
-        }
+        private readonly ILogger<AuditionsController> _logger = logger;
+        private readonly IValidator<CreateAuditionerInputModel> _validator = validator;
 
         [HttpGet]
         public IActionResult Index()
@@ -45,7 +35,7 @@ namespace FlowApplicationApp.Controllers
         [HttpGet("details/{id:guid}")]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
         {
-            var auditioner = await _context.FlowAuditioners.AsNoTracking()
+            var auditioner = await context.FlowAuditioners.AsNoTracking()
                 .Where(a => a.Id == id)
                 .Select(a => new AuditionerDetailsViewModel
                 {
@@ -93,7 +83,7 @@ namespace FlowApplicationApp.Controllers
             if (inputModel.ProfileImage != null && (inputModel.ProfileImage.Length > 0 
                                                     && inputModel.ProfileImage.Length <800000))
             {
-                var pathForSaving = Path.GetFullPath(Path.Combine(_host.ContentRootPath, "../../uploadFiles"));
+                var pathForSaving = Path.GetFullPath(Path.Combine(hosting.ContentRootPath, "../../uploadFiles"));
                 var uniqueFileName = inputModel.GetProfileImageFileName();
                 var finalPath = Path.Combine(pathForSaving, uniqueFileName);
                 using (var stream = new FileStream(finalPath, FileMode.Create))
@@ -102,8 +92,8 @@ namespace FlowApplicationApp.Controllers
                 }
                 entity.ProfileImageUrl = $"/uploads/{uniqueFileName}";
             }
-            _context.FlowAuditioners.Add(entity);
-            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            context.FlowAuditioners.Add(entity);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return RedirectToAction("Details", new { id = entity.Id });
         }
 
@@ -111,7 +101,7 @@ namespace FlowApplicationApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, CancellationToken cancellationToken)
         {
-            var auditioner = await _context.FlowAuditioners.AsNoTracking()
+            var auditioner = await context.FlowAuditioners.AsNoTracking()
                 .Where(a => a.Id == id)
                 .SingleOrDefaultAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -151,7 +141,7 @@ namespace FlowApplicationApp.Controllers
             
             if (!ModelState.IsValid) return View("Update", inputModel);
             
-            var auditioner = await _context.FlowAuditioners
+            var auditioner = await context.FlowAuditioners
                 .Where(a => a.Id == id)
                 .SingleOrDefaultAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -184,7 +174,7 @@ namespace FlowApplicationApp.Controllers
             // Handle profile image upload
             if (inputModel.ProfileImage != null && inputModel.ProfileImage.Length > 0 && inputModel.ProfileImage.Length < 800000)
             {
-                var pathForSaving = Path.GetFullPath(Path.Combine(_host.ContentRootPath, "../../uploadFiles"));
+                var pathForSaving = Path.GetFullPath(Path.Combine(hosting.ContentRootPath, "../../uploadFiles"));
                 var uniqueFileName = $"{Guid.NewGuid()}_{inputModel.ProfileImage.FileName}";
                 var finalPath = Path.Combine(pathForSaving, uniqueFileName);
                 
@@ -200,7 +190,7 @@ namespace FlowApplicationApp.Controllers
             if (!wasAccepted && inputModel.AcceptedIntoFlow)
             {
                 // Check if member already exists
-                var existingMember = await _context.FlowMembers
+                var existingMember = await context.FlowMembers
                     .Where(m => m.Email == auditioner.Email)
                     .AnyAsync(cancellationToken)
                     .ConfigureAwait(false);
@@ -231,11 +221,11 @@ namespace FlowApplicationApp.Controllers
                         IsDeleted = false
                     };
                     
-                    _context.FlowMembers.Add(flowMember);
+                    context.FlowMembers.Add(flowMember);
                 }
             }
             
-            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return RedirectToAction("Details", new { id = auditioner.Id });
         }
     }

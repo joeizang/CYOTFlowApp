@@ -1,20 +1,31 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace FlowApplicationApp.Data.DomainModels;
 public class FlowMember : IdentityUser<Guid>
-{
+{       
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
         public string FirstName { get; set; } = string.Empty;
-
+        
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
         public string LastName { get; set; } = string.Empty;
 
         public DateOnly DoB { get; set; }
-
+        
+        [Required]
+        [StringLength(500, MinimumLength = 50)]
         public string Bio { get; set; } = string.Empty;
 
         public DateOnly BornAgainDate { get; set; }
-
+        
+        [Required]
+        [StringLength(40, MinimumLength = 11)]
         public string WhatsAppNumber { get; set; } = string.Empty;
-
+        
+        [Required]
+        [StringLength(150, MinimumLength = 10)]
         public string ProfileImageUrl { get; set; } = string.Empty;
 
         public DateOnly WaterBaptismDate { get; set; }
@@ -22,7 +33,9 @@ public class FlowMember : IdentityUser<Guid>
         public DateOnly HolySpiritBaptismDate { get; set; }
 
         public bool HearsGod { get; set; }
-
+        
+        [Required]
+        [StringLength(500, MinimumLength = 100)]
         public string HowTheyStartedHearingGod { get; set; } = string.Empty;
 
         public bool ShortlistedForAudition { get; set; }

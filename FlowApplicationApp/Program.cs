@@ -5,6 +5,7 @@ using FlowApplicationApp.Data.DomainModels;
 using FlowApplicationApp.Models;
 
 using dotenv.net;
+using FlowApplicationApp.Infrastructure;
 using FluentValidation;
 using Microsoft.Extensions.FileProviders;
 
@@ -13,46 +14,25 @@ DotEnv.Load();
 var env = DotEnv.Fluent().WithEnvFiles(".env").Read();
 Console.WriteLine(env?["POSTGRES_CONN_STR"]);
 var connectionString = env?["POSTGRES_CONN_STR"] ?? throw new InvalidOperationException("Connection string 'POSTGRES_CONN_STR' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
-    .UseSeeding((context, _) =>
-    {
-      var roles = context.Set<FlowRoles>().Any();
-
-      if(!roles)
-        {
-            context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
-            context.SaveChanges();
-        }
-
-        if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
-        {
-            context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
-            context.SaveChanges();
-        }
-    })
-    .UseAsyncSeeding(async (context, _, token) =>
-    {
-        var roles = await context.Set<FlowRoles>().AnyAsync(token).ConfigureAwait(false);
-
-        if(!roles)
-        {
-            context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
-            await context.SaveChangesAsync(token).ConfigureAwait(false);
-        }
-        if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
-        {
-            context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
-            context.SaveChanges();
-        }
-    }));
+    );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<FlowMember>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<FlowRoles>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+});
 builder.Services.AddControllersWithViews();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddScoped<UserManager<FlowMember>>();
+builder.Services.AddScoped<RoleManager<FlowRoles>>();
+// builder.Services.AddScoped<SeedUsersSpecial>();
 
 builder.Services.Configure<IdentityOptions>(opt =>
 {
@@ -75,6 +55,36 @@ builder.Services.Configure<IdentityOptions>(opt =>
 });
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FlowMember>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<FlowRoles>>();
+    
+        if (!await roleManager.Roles.AnyAsync())
+        {
+            foreach (var role in SeedClass.PrepareRolesSeed())
+            {
+                await roleManager.CreateAsync(role);
+            }    
+        }
+
+    foreach (var member in SeedClass.PrepareAdminMemberSeed())
+    {
+        var user = await userManager.FindByEmailAsync(member?.Email);
+        if (user == null)
+        {
+            var createdUser = await userManager.CreateAsync(member, "ForWeCanDoNothing@gainstTheTruth-2026");
+            if (createdUser.Succeeded)
+            {
+                await userManager.AddToRoleAsync(member, "Admin");
+            }
+        }
+        
+        // Add every admin user to the Admin Role
+        
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -124,3 +134,35 @@ app.MapRazorPages()
     .WithStaticAssets();
 
 app.Run();
+
+    // .UseSeeding((context, _) =>
+    // {
+    //     var roles = context.Set<FlowRoles>().Any();
+    //
+    //     if(!roles)
+    //     {
+    //         context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
+    //         context.SaveChanges();
+    //     }
+    //
+    //     if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
+    //     {
+    //         context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
+    //         context.SaveChanges();
+    //     }
+    // })
+    // .UseAsyncSeeding(async (context, _, token) =>
+    // {
+    //     var roles = await context.Set<FlowRoles>().AnyAsync(token).ConfigureAwait(false);
+    //
+    //     if(!roles)
+    //     {
+    //         context.Set<FlowRoles>().AddRange(SeedClass.PrepareRolesSeed());
+    //         await context.SaveChangesAsync(token).ConfigureAwait(false);
+    //     }
+    //     if(!context.Set<FlowMember>().Any(m => m.Roles.Any(r => r.RoleName == "Admin")))
+    //     {
+    //         context.Set<FlowMember>().AddRange(SeedClass.PrepareAdminMemberSeed());
+    //         context.SaveChanges();
+    //     }
+    // })

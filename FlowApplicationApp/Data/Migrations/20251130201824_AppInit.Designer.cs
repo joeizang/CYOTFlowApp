@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlowApplicationApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251130155336_AppInit")]
+    [Migration("20251130201824_AppInit")]
     partial class AppInit
     {
         /// <inheritdoc />
@@ -121,7 +121,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("Bio")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateOnly>("BornAgainDate")
                         .HasColumnType("date");
@@ -149,7 +150,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("HearsGod")
                         .HasColumnType("boolean");
@@ -159,7 +161,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("HowTheyStartedHearingGod")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -169,7 +172,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -196,7 +200,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("ProfileImageUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -219,7 +224,8 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("WhatsAppNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.HasKey("Id");
 
@@ -262,11 +268,13 @@ namespace FlowApplicationApp.Data.Migrations
 
                     b.Property<string>("RoleDescription")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateOnly>("UpdatedOn")
                         .HasColumnType("date");
