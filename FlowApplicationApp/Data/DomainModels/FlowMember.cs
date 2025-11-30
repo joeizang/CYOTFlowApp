@@ -13,6 +13,8 @@ public class FlowMember : IdentityUser<Guid>
 
         public DateOnly BornAgainDate { get; set; }
 
+        public string WhatsAppNumber { get; set; } = string.Empty;
+
         public string ProfileImageUrl { get; set; } = string.Empty;
 
         public DateOnly WaterBaptismDate { get; set; }

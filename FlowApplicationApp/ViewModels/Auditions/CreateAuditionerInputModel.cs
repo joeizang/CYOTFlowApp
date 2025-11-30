@@ -20,6 +20,11 @@ public class CreateAuditionerInputModel
     public string Email { get; set; } = string.Empty;
 
     [Required]
+    [Phone]
+    [Display(Name = "Phone Number")]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [Required]
     [DataType(DataType.Date)]
     [Display(Name = "Date of Birth")]
     public DateOnly DoB { get; set; }
@@ -53,7 +58,7 @@ public class CreateAuditionerInputModel
     public bool HearsGod { get; set; }
 
     [Required]
-    [MaxLength(500)]
+    [MaxLength(1000)]
     [Display(Name = "How did you start hearing God?")]
     public string HowTheyStartedHearingGod { get; set; } = string.Empty;
 

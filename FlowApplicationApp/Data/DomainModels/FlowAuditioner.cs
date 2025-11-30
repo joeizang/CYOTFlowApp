@@ -16,6 +16,8 @@ public class FlowAuditioner
 
     public DateOnly DoB { get; set; }
 
+    public string WhatsAppNumber { get; set; } = string.Empty;
+
     public string Bio { get; set; } = string.Empty;
 
     public DateOnly BornAgainDate { get; set; }

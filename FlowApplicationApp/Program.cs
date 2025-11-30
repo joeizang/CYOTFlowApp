@@ -5,6 +5,8 @@ using FlowApplicationApp.Data.DomainModels;
 using FlowApplicationApp.Models;
 
 using dotenv.net;
+using FluentValidation;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
@@ -39,6 +41,7 @@ builder.Services.AddDefaultIdentity<FlowMember>(options => options.SignIn.Requir
     .AddRoles<FlowRoles>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.Configure<IdentityOptions>(opt =>
 {
@@ -80,7 +83,18 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+var envr = app.Environment;
+var properPath = Path.Combine(envr.ContentRootPath, "../../uploadfiles");
 
+if(!Directory.Exists(properPath))
+{
+    Directory.CreateDirectory(properPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(properPath)// map to an external folder
+});
 await using (var scope = app.Services.CreateAsyncScope())
 await using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
 {
