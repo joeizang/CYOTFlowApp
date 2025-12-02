@@ -57,6 +57,12 @@ builder.Services.Configure<IdentityOptions>(opt =>
 
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Add(System.Net.IPAddress.Parse("127.0.0.1"));
+});
+
 var app = builder.Build();
 
 await using (var scope = app.Services.CreateAsyncScope())
