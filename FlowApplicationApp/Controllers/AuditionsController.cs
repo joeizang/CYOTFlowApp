@@ -27,6 +27,37 @@ namespace FlowApplicationApp.Controllers
             return View(inputModel);
         }
 
+        [HttpGet("list")]
+        public async Task<IActionResult> List(CancellationToken cancellationToken)
+        {
+            var auditioners = await context.FlowAuditioners.AsNoTracking()
+                .Select(a => new AuditionerDetailsViewModel
+                {
+                    Id = a.Id,
+                    FullName = $"{a.FirstName} {a.LastName}",
+                    Email = a.Email,
+                    DoB = a.DoB,
+                    WhatsAppNumber = a.WhatsAppNumber,
+                    Bio = a.Bio,
+                    BornAgainDate = a.BornAgainDate,
+                    ProfileImageUrl = a.ProfileImageUrl,
+                    WaterBaptismDate = a.WaterBaptismDate,
+                    HolySpiritBaptismDate = a.HolySpiritBaptismDate,
+                    HearsGod = a.HearsGod,
+                    HowTheyStartedHearingGod = a.HowTheyStartedHearingGod,
+                    ShortlistedForAudition = a.ShortlistedForAudition,
+                    AuditionDate = a.AuditionDate,
+                    AuditionTime = a.AuditionTime,
+                    AcceptedIntoFlow = a.AcceptedIntoFlow,
+                    CoverSpeech = a.CoverSpeech,
+                    IsActive = a.IsActive
+                })
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+                
+            return View(auditioners);
+        }
+
         [HttpGet("details/{id:guid}")]
         public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
         {

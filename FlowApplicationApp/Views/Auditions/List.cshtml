@@ -1,0 +1,254 @@
+@model List<FlowApplicationApp.ViewModels.Auditions.AuditionerDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Auditioners";
+}
+
+<style>
+    .auditioners-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 3rem 0;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        color: #6c757d;
+        opacity: 0.9;
+    }
+    
+    .auditioner-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid #6c757d !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 
+                    0 4px 12px rgba(108, 117, 125, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .auditioner-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 
+                    0 6px 16px rgba(108, 117, 125, 0.4);
+        border-color: #6c757d !important;
+        background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .auditioner-card-body {
+        padding: 1.5rem;
+        color: #ffffff;
+    }
+    
+    .auditioner-image-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+    }
+    
+    .auditioner-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #6c757d;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .auditioner-status-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .status-active {
+        background-color: #28a745;
+    }
+    
+    .status-inactive {
+        background-color: #6c757d;
+    }
+    
+    .auditioner-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .auditioner-email {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        margin-bottom: 1rem;
+        word-break: break-word;
+    }
+    
+    .auditioner-bio {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        max-height: 3rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .auditioner-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .info-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        background: #6c757d;
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .info-badge.shortlisted {
+        background: #17a2b8;
+    }
+    
+    .info-badge.accepted {
+        background: #28a745;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-state-icon {
+        font-size: 5rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 2rem;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state p {
+        font-size: 1.1rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        
+        .auditioner-card-body {
+            padding: 1.25rem;
+        }
+        
+        .auditioner-image-container {
+            width: 100px;
+            height: 100px;
+        }
+    }
+</style>
+
+<div class="auditioners-container">
+    <div class="container">
+        <div class="page-header">
+            <h1>Auditioners</h1>
+            <p>All applicants awaiting audition</p>
+        </div>
+        
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var auditioner in Model)
+                {
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <a href="@Url.Action("Details", "Auditions", new { id = auditioner.Id })" class="auditioner-card">
+                            <div class="auditioner-card-body">
+                                <div class="auditioner-image-container">
+                                    <img src="@(!string.IsNullOrEmpty(auditioner.ProfileImageUrl) ? auditioner.ProfileImageUrl : "/img/default-avatar.png")" 
+                                         alt="@auditioner.FullName" 
+                                         class="auditioner-image" />
+                                    <div class="auditioner-status-badge @(auditioner.IsActive ? "status-active" : "status-inactive")"></div>
+                                </div>
+                                
+                                <h3 class="auditioner-name">@auditioner.FullName</h3>
+                                
+                                <p class="auditioner-email">
+                                    <i class="bi bi-envelope"></i> @auditioner.Email
+                                </p>
+                                
+                                @if (!string.IsNullOrEmpty(auditioner.Bio))
+                                {
+                                    <p class="auditioner-bio">@auditioner.Bio</p>
+                                }
+                                
+                                <div class="auditioner-info">
+                                    @if (auditioner.ShortlistedForAudition)
+                                    {
+                                        <span class="info-badge shortlisted">Shortlisted</span>
+                                    }
+                                    @if (auditioner.AcceptedIntoFlow)
+                                    {
+                                        <span class="info-badge accepted">Accepted</span>
+                                    }
+                                    @if (auditioner.AuditionDate != DateTime.MinValue)
+                                    {
+                                        <span class="info-badge">@auditioner.AuditionDate.ToString("dd MMM, yyyy")</span>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3>No Auditioners Yet</h3>
+                <p>There are currently no auditioners to display.</p>
+            </div>
+        }
+    </div>
+</div>
