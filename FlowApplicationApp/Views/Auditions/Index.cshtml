@@ -242,9 +242,17 @@
                 <textarea asp-for="CoverSpeech" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="CoverSpeech" class="text-danger"></span>
             </div>
+
+            <div class="mb-3">
+                    <input asp-for="HaveReadCoC" class="form-check-input me-2" type="checkbox" id="HaveReadCoC" />
+                    <label asp-for="HaveReadCoC" class="form-label"></label>
+                    <span asp-validation-for="HaveReadCoC" class="text-danger d-block"></span>
+            </div>
             
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                    <button type="submit" class="btn btn-primary btn-lg rounded" disabled>
+                        Submit Audition Form
+                    </button>
             </div>
         </form>
     </div>
@@ -252,4 +260,15 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('#HaveReadCoC').change(function() {
+                if ($(this).is(':checked')) {
+                    $('button[type="submit"]').prop('disabled', false);
+                } else {
+                    $('button[type="submit"]').prop('disabled', true);
+                }
+            });
+        })
+    </script>
 }

@@ -23,7 +23,8 @@ namespace FlowApplicationApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            var inputModel = new CreateAuditionerInputModel();
+            return View(inputModel);
         }
 
         [HttpGet("details/{id:guid}")]

@@ -27,7 +27,7 @@ public class CreateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "Date of Birth")]
-    public DateTime DoB { get; set; }
+    public DateTime DoB { get; set; } = new DateTime(1990, 1, 1);
 
     [Required]
     [MaxLength(1000)]
@@ -37,7 +37,7 @@ public class CreateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When did you become born again?")]
-    public DateTime BornAgainDate { get; set; }
+    public DateTime BornAgainDate { get; set; } = DateTime.Now;
 
     [Required]
     [Display(Name = "Add a Profile Image")]
@@ -46,12 +46,12 @@ public class CreateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When were you water baptized?")]
-    public DateTime WaterBaptismDate { get; set; }
+    public DateTime WaterBaptismDate { get; set; } = DateTime.Now;
 
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When were you baptized in the Holy Spirit?")]
-    public DateTime HolySpiritBaptismDate { get; set; }
+    public DateTime HolySpiritBaptismDate { get; set; } = DateTime.Now;
 
     [Required]
     [Display(Name = "Do you hear God speaking to you?")]
@@ -66,4 +66,8 @@ public class CreateAuditionerInputModel
     [MaxLength(1000)]
     [Display(Name = "Why do you want to join Flow?")]
     public string CoverSpeech { get; set; } = string.Empty;
+
+    [Required]
+    [Display(Name = "I have read and agree to the Code of Conduct")]
+    public bool HaveReadCoC { get; set; }
 }
