@@ -5,18 +5,17 @@ using FlowApplicationApp.Data.DomainModels;
 using FlowApplicationApp.Models;
 
 using dotenv.net;
-using FlowApplicationApp.Infrastructure;
 using FluentValidation;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
 var env = DotEnv.Fluent().WithEnvFiles(".env").Read();
-Console.WriteLine(env?["POSTGRES_CONN_STR"]);
-var connectionString = env?["POSTGRES_CONN_STR"] ?? throw new InvalidOperationException("Connection string 'POSTGRES_CONN_STR' not found.");
+
+var connectionString = env?["SQLITE_CONN_STR"] ?? throw new InvalidOperationException("Connection string 'SQLITE_CONN_STR' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString)
+    options.UseSqlite(connectionString)
     );
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -33,6 +32,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddScoped<UserManager<FlowMember>>();
 builder.Services.AddScoped<RoleManager<FlowRoles>>();
 // builder.Services.AddScoped<SeedUsersSpecial>();
+
+// Register document conversion services
+builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IDocumentConversionService, FlowApplicationApp.Infrastructure.Services.DocumentConversionService>();
+builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.ICodeOfConductService, FlowApplicationApp.Infrastructure.Services.CodeOfConductService>();
 
 builder.Services.Configure<IdentityOptions>(opt =>
 {
@@ -74,15 +77,12 @@ await using (var scope = app.Services.CreateAsyncScope())
         var user = await userManager.FindByEmailAsync(member?.Email);
         if (user == null)
         {
-            var createdUser = await userManager.CreateAsync(member, "ForWeCanDoNothing@gainstTheTruth-2026");
+            var createdUser = await userManager.CreateAsync(member, env?["ADMIN_PASSWORD"] ?? "John832=>2026");
             if (createdUser.Succeeded)
             {
                 await userManager.AddToRoleAsync(member, "Admin");
             }
-        }
-        
-        // Add every admin user to the Admin Role
-        
+        }        
     }
 }
 

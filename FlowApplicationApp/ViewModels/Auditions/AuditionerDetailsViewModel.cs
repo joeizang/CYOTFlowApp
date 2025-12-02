@@ -10,19 +10,19 @@ public class AuditionerDetailsViewModel
     
     public string Email { get; set; } = string.Empty;
     
-    public DateOnly DoB { get; set; }
+    public DateTime DoB { get; set; }
     
     public string WhatsAppNumber { get; set; } = string.Empty;
     
     public string Bio { get; set; } = string.Empty;
     
-    public DateOnly BornAgainDate { get; set; }
+    public DateTime BornAgainDate { get; set; }
     
     public string ProfileImageUrl { get; set; } = string.Empty;
     
-    public DateOnly WaterBaptismDate { get; set; }
+    public DateTime WaterBaptismDate { get; set; }
     
-    public DateOnly HolySpiritBaptismDate { get; set; }
+    public DateTime HolySpiritBaptismDate { get; set; }
     
     public bool HearsGod { get; set; }
     
@@ -30,7 +30,7 @@ public class AuditionerDetailsViewModel
     
     public bool ShortlistedForAudition { get; set; }
     
-    public DateOnly AuditionDate { get; set; }
+    public DateTime AuditionDate { get; set; }
     
     public TimeOnly AuditionTime { get; set; }
     

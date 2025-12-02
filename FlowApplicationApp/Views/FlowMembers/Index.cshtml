@@ -1,8 +1,251 @@
-@model dynamic
+@model List<FlowApplicationApp.ViewModels.FlowMembers.FlowMemberDetailsViewModel>
 
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+    ViewData["Title"] = "Flow Members";
 }
 
-<h2>title</h2>
+<style>
+    .flow-members-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 3rem 0;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--bs-warning);
+        opacity: 0.9;
+    }
+    
+    .member-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid var(--bs-warning) !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 
+                    0 4px 12px rgba(255, 193, 7, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .member-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 
+                    0 6px 16px rgba(255, 193, 7, 0.4);
+        border-color: var(--bs-warning) !important;
+        background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .member-card-body {
+        padding: 1.5rem;
+        color: #ffffff;
+    }
+    
+    .member-image-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+    }
+    
+    .member-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--bs-warning);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .member-status-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .status-active {
+        background-color: #28a745;
+    }
+    
+    .status-inactive {
+        background-color: #6c757d;
+    }
+    
+    .member-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .member-username {
+        font-size: 0.95rem;
+        color: var(--bs-warning);
+        text-align: center;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .member-email {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        margin-bottom: 1rem;
+        word-break: break-word;
+    }
+    
+    .member-bio {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        max-height: 3rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .member-roles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .role-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        background: var(--bs-warning);
+        color: #000000;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-state-icon {
+        font-size: 5rem;
+        color: var(--bs-warning);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 2rem;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state p {
+        font-size: 1.1rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        
+        .member-card-body {
+            padding: 1.25rem;
+        }
+        
+        .member-image-container {
+            width: 100px;
+            height: 100px;
+        }
+    }
+</style>
+
+<div class="flow-members-container">
+    <div class="container">
+        <div class="page-header">
+            <h1>Flow Members</h1>
+            <p>Meet our amazing community of believers</p>
+        </div>
+        
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var member in Model)
+                {
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <a href="@Url.Action("Details", "FlowMembers", new { id = member.Id })" class="member-card">
+                            <div class="member-card-body">
+                                <div class="member-image-container">
+                                    <img src="@(!string.IsNullOrEmpty(member.ProfileImageUrl) ? member.ProfileImageUrl : "/img/default-avatar.png")" 
+                                         alt="@member.FullName" 
+                                         class="member-image" />
+                                    <div class="member-status-badge @(member.IsActive ? "status-active" : "status-inactive")"></div>
+                                </div>
+                                
+                                <h3 class="member-name">@member.FullName</h3>
+                                
+                                <p class="member-username">@@@member.UserName</p>
+                                
+                                <p class="member-email">
+                                    <i class="bi bi-envelope"></i> @member.Email
+                                </p>
+                                
+                                @if (!string.IsNullOrEmpty(member.Bio))
+                                {
+                                    <p class="member-bio">@member.Bio</p>
+                                }
+                                
+                                @if (member.Roles != null && member.Roles.Any())
+                                {
+                                    <div class="member-roles">
+                                        @foreach (var role in member.Roles)
+                                        {
+                                            <span class="role-badge">@role</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3>No Flow Members Yet</h3>
+                <p>There are currently no members to display.</p>
+            </div>
+        }
+    </div>
+</div>

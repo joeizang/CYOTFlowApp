@@ -28,9 +28,24 @@ namespace FlowApplicationApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            return View();
+            var members = await _context.FlowMembers.AsNoTracking()
+                .Select(m => new FlowMemberDetailsViewModel
+                {
+                    Id = m.Id,
+                    FullName = $"{m.FirstName} {m.LastName}",
+                    Email = m.Email ?? string.Empty,
+                    UserName = m.UserName ?? string.Empty,
+                    ProfileImageUrl = m.ProfileImageUrl,
+                    Bio = m.Bio,
+                    IsActive = m.IsActive,
+                    Roles = m.Roles.Select(r => r.Name ?? string.Empty).ToList()
+                })
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+                
+            return View(members);
         }
 
         [HttpGet("details/{id:guid}")]

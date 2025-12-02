@@ -25,7 +25,7 @@ public class CreateAuditionerValidator : AbstractValidator<CreateAuditionerInput
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("Phone Number is required.")
-            .Matches(@"^\+?[1-9]\d{1,11}$").WithMessage("A valid phone number is required. Preferrably a WhatsApp number.");
+            .Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("A valid phone number is required. Preferrably a WhatsApp number.");
 
         RuleFor(x => x.Bio)
             .MinimumLength(10).WithMessage("Your Bio must be at least 10 characters long.")

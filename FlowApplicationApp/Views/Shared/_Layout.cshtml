@@ -13,7 +13,9 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-0">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FlowApplicationApp</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/img/CofTruth.webp" alt="Courtyard of Truth" style="height:60px;"/>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -21,7 +23,7 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active text-warning" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link fs-6 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active text-warning" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Auditions" ? "active text-warning" : "")" asp-area="" asp-controller="Auditions" asp-action="Index">Auditions</a>
@@ -33,7 +35,7 @@
                         </li>
                     }
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Privacy" ? "active text-warning" : "")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CodeOfConduct" ? "active text-warning" : "")" asp-area="" asp-controller="CodeOfConduct" asp-action="Index">Code of Conduct</a>
                     </li>
                 </ul>
                 <partial name="_LoginPartial"/>
@@ -49,7 +51,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2025 - FlowApplicationApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2025 - Courtyard of Truth
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

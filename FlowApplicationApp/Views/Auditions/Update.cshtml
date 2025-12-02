@@ -13,7 +13,7 @@
                         <h1 class="mb-4 text-center">Update Auditioner Information</h1>
                         <p class="text-muted text-center mb-4">Update the details for this auditioner</p>
                         
-                        <form asp-action="UpdateAuditioner" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <form asp-action="Update" asp-controller="Auditions" method="post" enctype="multipart/form-data" class="needs-validation">
                             <input type="hidden" asp-for="Id" />
                             
                             <!-- Personal Information Section -->

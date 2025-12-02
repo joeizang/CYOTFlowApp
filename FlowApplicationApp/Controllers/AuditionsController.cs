@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using FlowApplicationApp.Data;
 using FlowApplicationApp.Infrastructure.Extensions;
 using FlowApplicationApp.ViewModels.Auditions;
@@ -10,7 +5,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace FlowApplicationApp.Controllers
 {
@@ -69,15 +63,15 @@ namespace FlowApplicationApp.Controllers
         {
             Console.WriteLine(inputModel.ProfileImage.FileName);
             if (!ModelState.IsValid) return View("Index", inputModel);
-            // var validationResult = await _validator.ValidateAsync(inputModel);
-            // if (!validationResult.IsValid)
-            // {
-            //     foreach (var error in validationResult.Errors)
-            //     {
-            //         ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-            //     }
-            //     return View("Index", inputModel);
-            // }
+            var validationResult = await _validator.ValidateAsync(inputModel, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+                return View("Index", inputModel);
+            }
             //save every image to the img folder and save the path to the database
             var entity = inputModel.MapToDomainModel();
             if (inputModel.ProfileImage != null && (inputModel.ProfileImage.Length > 0 
@@ -99,12 +93,9 @@ namespace FlowApplicationApp.Controllers
 
         [HttpGet("update/{id:guid}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id, CancellationToken token)
         {
-            var auditioner = await context.FlowAuditioners.AsNoTracking()
-                .Where(a => a.Id == id)
-                .SingleOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+            var auditioner = await context.FlowAuditioners.FindAsync([id, token], cancellationToken: token).ConfigureAwait(false);
             
             if (auditioner == null) return NotFound();
             
@@ -135,16 +126,16 @@ namespace FlowApplicationApp.Controllers
 
         [HttpPost("update/{id:guid}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateAuditioner(Guid id, [Bind]UpdateAuditionerInputModel inputModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id,UpdateAuditionerInputModel inputModel, CancellationToken token)
         {
             if (id != inputModel.Id) return BadRequest();
             
             if (!ModelState.IsValid) return View("Update", inputModel);
             
             var auditioner = await context.FlowAuditioners
-                .Where(a => a.Id == id)
-                .SingleOrDefaultAsync(cancellationToken)
+                .FindAsync([id, token], cancellationToken: token)
                 .ConfigureAwait(false);
+
             
             if (auditioner == null) return NotFound();
             
@@ -169,7 +160,7 @@ namespace FlowApplicationApp.Controllers
             var wasAccepted = auditioner.AcceptedIntoFlow;
             auditioner.AcceptedIntoFlow = inputModel.AcceptedIntoFlow;
             auditioner.IsActive = inputModel.IsActive;
-            auditioner.UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow);
+            auditioner.UpdatedOn = DateTime.UtcNow;
             
             // Handle profile image upload
             if (inputModel.ProfileImage != null && inputModel.ProfileImage.Length > 0 && inputModel.ProfileImage.Length < 800000)
@@ -177,10 +168,10 @@ namespace FlowApplicationApp.Controllers
                 var pathForSaving = Path.GetFullPath(Path.Combine(hosting.ContentRootPath, "../../uploadFiles"));
                 var uniqueFileName = $"{Guid.NewGuid()}_{inputModel.ProfileImage.FileName}";
                 var finalPath = Path.Combine(pathForSaving, uniqueFileName);
-                
-                using (var stream = new FileStream(finalPath, FileMode.Create))
+
+                await using (var stream = new FileStream(finalPath, FileMode.Create))
                 {
-                    await inputModel.ProfileImage.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
+                    await inputModel.ProfileImage.CopyToAsync(stream, token).ConfigureAwait(false);
                 }
                 
                 auditioner.ProfileImageUrl = $"/uploads/{uniqueFileName}";
@@ -192,7 +183,7 @@ namespace FlowApplicationApp.Controllers
                 // Check if member already exists
                 var existingMember = await context.FlowMembers
                     .Where(m => m.Email == auditioner.Email)
-                    .AnyAsync(cancellationToken)
+                    .AnyAsync(token)
                     .ConfigureAwait(false);
                 
                 if (!existingMember)
@@ -215,8 +206,8 @@ namespace FlowApplicationApp.Controllers
                         HowTheyStartedHearingGod = auditioner.HowTheyStartedHearingGod,
                         CoverSpeech = auditioner.CoverSpeech,
                         AcceptedIntoFlow = true,
-                        CreatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedOn = DateTime.UtcNow,
+                        UpdatedOn = DateTime.UtcNow,
                         IsActive = true,
                         IsDeleted = false
                     };
@@ -225,7 +216,7 @@ namespace FlowApplicationApp.Controllers
                 }
             }
             
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await context.SaveChangesAsync(token).ConfigureAwait(false);
             return RedirectToAction("Details", new { id = auditioner.Id });
         }
     }

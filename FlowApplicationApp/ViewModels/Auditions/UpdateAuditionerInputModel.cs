@@ -29,7 +29,7 @@ public class UpdateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "Date of Birth")]
-    public DateOnly DoB { get; set; }
+    public DateTime DoB { get; set; }
 
     [Required]
     [MaxLength(1000)]
@@ -39,7 +39,7 @@ public class UpdateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When did you become born again?")]
-    public DateOnly BornAgainDate { get; set; }
+    public DateTime BornAgainDate { get; set; }
 
     [Display(Name = "Update Profile Image (Optional)")]
     public IFormFile? ProfileImage { get; set; }
@@ -47,12 +47,12 @@ public class UpdateAuditionerInputModel
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When were you water baptized?")]
-    public DateOnly WaterBaptismDate { get; set; }
+    public DateTime WaterBaptismDate { get; set; }
 
     [Required]
     [DataType(DataType.Date)]
     [Display(Name = "When were you baptized in the Holy Spirit?")]
-    public DateOnly HolySpiritBaptismDate { get; set; }
+    public DateTime HolySpiritBaptismDate { get; set; }
 
     [Required]
     [Display(Name = "Do you hear God speaking to you?")]
@@ -72,7 +72,7 @@ public class UpdateAuditionerInputModel
 
     [DataType(DataType.Date)]
     [Display(Name = "Audition Date")]
-    public DateOnly? AuditionDate { get; set; }
+    public DateTime? AuditionDate { get; set; }
 
     [DataType(DataType.Time)]
     [Display(Name = "Audition Time")]

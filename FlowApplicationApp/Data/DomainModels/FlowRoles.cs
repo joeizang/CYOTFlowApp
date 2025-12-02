@@ -15,9 +15,9 @@ namespace FlowApplicationApp.Data.DomainModels;
         [StringLength(500, MinimumLength = 5)]
         public string RoleDescription { get; set; } = string.Empty;
 
-        public DateOnly CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        public DateOnly UpdatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
 
         public bool IsDeleted { get; set; }
     }

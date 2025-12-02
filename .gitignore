@@ -13,3 +13,5 @@ FlowApplicationApp/wwwroot/.DS_Store
 FlowApplicationApp/.DS_Store
 .DS_Store
 .env
+CYOTApps.sln.DotSettings.user
+*.sqlite
