@@ -86,6 +86,7 @@ Views/
 | FileSize | long | File size in bytes |
 
 ### Indexes
+
 - `IX_CodeOfConductDocuments_IsActive` - For quick retrieval of active document
 - `IX_CodeOfConductDocuments_Version` - For version sorting
 - `IX_CodeOfConductDocuments_UploadedBy` - Foreign key index
@@ -119,23 +120,28 @@ Views/
 ## Technical Details
 
 ### Dependencies
+
 - **DocumentFormat.OpenXml** (v3.3.0) - For DOCX parsing and conversion
 - **Entity Framework Core** - For database operations
 - **ASP.NET Core Identity** - For authentication and authorization
 
 ### Services Registration (Program.cs)
+
 ```csharp
 builder.Services.AddScoped<IDocumentConversionService, DocumentConversionService>();
 builder.Services.AddScoped<ICodeOfConductService, CodeOfConductService>();
 ```
 
 ### File Storage
+
 - Files are stored in: `uploadFiles/code-of-conduct/v{version}/`
 - Naming convention: `code-of-conduct-v{version}.docx`
 - HTML content is stored in the database for fast retrieval
 
 ### Conversion Features
+
 The DOCX to HTML converter supports:
+
 - ✅ Paragraphs and line breaks
 - ✅ Headings (H1-H6)
 - ✅ Text formatting (bold, italic, underline)
@@ -163,6 +169,7 @@ The DOCX to HTML converter supports:
 ## Future Enhancements
 
 Possible improvements:
+
 - [ ] Image extraction and embedding
 - [ ] Custom CSS styling for converted HTML
 - [ ] PDF export functionality
@@ -177,6 +184,7 @@ Possible improvements:
 To test the implementation:
 
 1. **Build and Run**
+
    ```bash
    cd FlowApplicationApp
    dotnet build
@@ -200,10 +208,12 @@ To test the implementation:
 ## Migration
 
 The database migration has been created and applied:
+
 - Migration: `20251201192345_AddCodeOfConductDocument`
 - Table: `CodeOfConductDocuments`
 
 To recreate the migration:
+
 ```bash
 dotnet ef migrations add AddCodeOfConductDocument
 dotnet ef database update
@@ -212,6 +222,7 @@ dotnet ef database update
 ## Support
 
 For issues or questions:
+
 - Check logs in the application
 - Review error messages in the UI
 - Verify file permissions for the upload directory

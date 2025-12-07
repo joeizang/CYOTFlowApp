@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="FlowApplicationApp.Tests/FlowApplicationApp.Tests.csproj" />
   <Project Path="FlowApplicationApp/FlowApplicationApp.csproj" />
 </Solution>

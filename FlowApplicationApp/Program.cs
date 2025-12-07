@@ -37,6 +37,9 @@ builder.Services.AddScoped<RoleManager<FlowRoles>>();
 builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IDocumentConversionService, FlowApplicationApp.Infrastructure.Services.DocumentConversionService>();
 builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.ICodeOfConductService, FlowApplicationApp.Infrastructure.Services.CodeOfConductService>();
 
+// Register email service
+builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IEmailSender, FlowApplicationApp.Infrastructure.Services.EmailSender>();
+
 builder.Services.Configure<IdentityOptions>(opt =>
 {
    opt.Password.RequireDigit = true;

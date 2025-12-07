@@ -1,5 +1,6 @@
 using FlowApplicationApp.Data;
 using FlowApplicationApp.Infrastructure.Extensions;
+using FlowApplicationApp.Infrastructure.Services;
 using FlowApplicationApp.ViewModels.Auditions;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,8 @@ namespace FlowApplicationApp.Controllers
         ILogger<AuditionsController> logger,
         IValidator<CreateAuditionerInputModel> validator,
         IWebHostEnvironment hosting,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        IEmailSender emailSender)
         : Controller
     {
         private readonly ILogger<AuditionsController> _logger = logger;
@@ -212,6 +214,30 @@ namespace FlowApplicationApp.Controllers
             // Create FlowMember if auditioner is newly accepted into Flow
             if (!wasAccepted && inputModel.AcceptedIntoFlow)
             {
+                // Send congratulations email to auditioner
+                var emailSent = await emailSender.SendAuditionPassedEmailAsync(
+                    auditioner.Email,
+                    $"{auditioner.FirstName} {auditioner.LastName}",
+                    token
+                ).ConfigureAwait(false);
+                
+                if (emailSent)
+                {
+                    _logger.LogInformation(
+                        "Audition passed email sent successfully to {Email} for auditioner {AuditionerId}",
+                        auditioner.Email,
+                        auditioner.Id
+                    );
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "Failed to send audition passed email to {Email} for auditioner {AuditionerId}",
+                        auditioner.Email,
+                        auditioner.Id
+                    );
+                }
+                
                 // Check if member already exists
                 var existingMember = await context.FlowMembers
                     .Where(m => m.Email == auditioner.Email)
@@ -222,7 +248,7 @@ namespace FlowApplicationApp.Controllers
                 {
                     var flowMember = new Data.DomainModels.FlowMember
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Ulid.NewUlid().ToGuid(),
                         FirstName = auditioner.FirstName,
                         LastName = auditioner.LastName,
                         Email = auditioner.Email,
