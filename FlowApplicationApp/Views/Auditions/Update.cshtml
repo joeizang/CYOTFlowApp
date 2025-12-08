@@ -4,73 +4,162 @@
     ViewData["Title"] = "Update Auditioner";
 }
 
-<div class="container-fluid bg-dark py-5">
+<style>
+    .page-bg {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+    }
+    
+    .header-gradient {
+        background: linear-gradient(135deg, var(--bs-warning) 0%, #f0ad4e 100%);
+    }
+    
+    .avatar-lg {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+    }
+    .btn-glass-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+
+    /* Form Styles for Glass Theme */
+    .form-control, .form-select {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-color: var(--bs-warning);
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+    /* Fix for date inputs in dark mode */
+    input[type="date"], input[type="time"] {
+        color-scheme: dark;
+    }
+    
+    .form-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-check-input {
+        background-color: rgba(0,0,0,0.3);
+        border-color: rgba(255,255,255,0.3);
+    }
+    .form-check-input:checked {
+        background-color: var(--bs-warning);
+        border-color: var(--bs-warning);
+    }
+    .form-check-label {
+        color: rgba(255,255,255,0.9);
+    }
+    .text-danger {
+        color: #ff6b6b !important;
+    }
+    .form-text {
+        color: rgba(255, 255, 255, 0.5);
+    }
+</style>
+
+<div class="page-bg min-vh-100 py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
-                <div class="card shadow-lg border-0" style="border-radius: 1.5rem;">
-                    <div class="card-body p-5">
-                        <h1 class="mb-4 text-center">Update Auditioner Information</h1>
-                        <p class="text-muted text-center mb-4">Update the details for this auditioner</p>
-                        
+                <div class="card glass-effect border-2 border-warning rounded-4 shadow-lg overflow-hidden">
+                    <div class="card-header header-gradient text-black p-4 border-0">
+                        <h2 class="mb-0 h3 fw-bold">
+                            <i class="bi bi-pencil-square me-2"></i>Update Auditioner Information
+                        </h2>
+                    </div>
+                    <div class="card-body p-4 p-lg-5">
                         <form asp-action="Update" asp-controller="Auditions" method="post" enctype="multipart/form-data" class="needs-validation">
                             <input type="hidden" asp-for="Id" />
                             
                             <!-- Personal Information Section -->
-                            <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
-                                <div class="card-body p-4">
-                                    <h4 class="mb-4 pb-2 border-bottom">Personal Information</h4>
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    Personal Information
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="FirstName" class="form-label"></label>
+                                            <input asp-for="FirstName" class="form-control" placeholder="First Name" required />
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                    </div>
                                     
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="FirstName" class="form-control" placeholder="First Name" required />
-                                                <label asp-for="FirstName"></label>
-                                                <span asp-validation-for="FirstName" class="text-danger"></span>
-                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="LastName" class="form-label"></label>
+                                            <input asp-for="LastName" class="form-control" placeholder="Last Name" required />
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="LastName" class="form-control" placeholder="Last Name" required />
-                                                <label asp-for="LastName"></label>
-                                                <span asp-validation-for="LastName" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="Email" class="form-label"></label>
+                                            <input asp-for="Email" type="email" class="form-control" placeholder="Email" required />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="Email" type="email" class="form-control" placeholder="Email" required />
-                                                <label asp-for="Email"></label>
-                                                <span asp-validation-for="Email" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="WhatsAppNumber" class="form-label"></label>
+                                            <input asp-for="WhatsAppNumber" type="tel" class="form-control" placeholder="WhatsApp Number" required />
+                                            <span asp-validation-for="WhatsAppNumber" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="WhatsAppNumber" type="tel" class="form-control" placeholder="WhatsApp Number" required />
-                                                <label asp-for="WhatsAppNumber"></label>
-                                                <span asp-validation-for="WhatsAppNumber" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label asp-for="DoB" class="form-label"></label>
+                                            <input asp-for="DoB" type="date" class="form-control" required />
+                                            <span asp-validation-for="DoB" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <input asp-for="DoB" type="date" class="form-control" required />
-                                                <label asp-for="DoB"></label>
-                                                <span asp-validation-for="DoB" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label asp-for="Bio" class="form-label"></label>
+                                            <textarea asp-for="Bio" class="form-control" placeholder="Biography" style="height: 120px" required></textarea>
+                                            <span asp-validation-for="Bio" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <textarea asp-for="Bio" class="form-control" placeholder="Biography" style="height: 120px" required></textarea>
-                                                <label asp-for="Bio"></label>
-                                                <span asp-validation-for="Bio" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-12">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
                                             <label asp-for="ProfileImage" class="form-label"></label>
                                             <input asp-for="ProfileImage" type="file" class="form-control" accept="image/*" />
                                             <span asp-validation-for="ProfileImage" class="text-danger"></span>
@@ -81,98 +170,108 @@
                             </div>
                             
                             <!-- Spiritual Journey Section -->
-                            <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
-                                <div class="card-body p-4">
-                                    <h4 class="mb-4 pb-2 border-bottom">Spiritual Journey</h4>
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-heart"></i>
+                                    Spiritual Journey
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="BornAgainDate" class="form-label"></label>
+                                            <input asp-for="BornAgainDate" type="date" class="form-control" required />
+                                            <span asp-validation-for="BornAgainDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
                                     
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="form-floating">
-                                                <input asp-for="BornAgainDate" type="date" class="form-control" required />
-                                                <label asp-for="BornAgainDate"></label>
-                                                <span asp-validation-for="BornAgainDate" class="text-danger"></span>
-                                            </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="WaterBaptismDate" class="form-label"></label>
+                                            <input asp-for="WaterBaptismDate" type="date" class="form-control" required />
+                                            <span asp-validation-for="WaterBaptismDate" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-4">
-                                            <div class="form-floating">
-                                                <input asp-for="WaterBaptismDate" type="date" class="form-control" required />
-                                                <label asp-for="WaterBaptismDate"></label>
-                                                <span asp-validation-for="WaterBaptismDate" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="HolySpiritBaptismDate" class="form-label"></label>
+                                            <input asp-for="HolySpiritBaptismDate" type="date" class="form-control" required />
+                                            <span asp-validation-for="HolySpiritBaptismDate" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-4">
-                                            <div class="form-floating">
-                                                <input asp-for="HolySpiritBaptismDate" type="date" class="form-control" required />
-                                                <label asp-for="HolySpiritBaptismDate"></label>
-                                                <span asp-validation-for="HolySpiritBaptismDate" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-12">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
                                             <div class="form-check">
                                                 <input asp-for="HearsGod" class="form-check-input" type="checkbox" />
                                                 <label asp-for="HearsGod" class="form-check-label"></label>
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <textarea asp-for="HowTheyStartedHearingGod" class="form-control" placeholder="How did you start hearing God?" style="height: 120px"></textarea>
-                                                <label asp-for="HowTheyStartedHearingGod"></label>
-                                                <span asp-validation-for="HowTheyStartedHearingGod" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label asp-for="HowTheyStartedHearingGod" class="form-label"></label>
+                                            <textarea asp-for="HowTheyStartedHearingGod" class="form-control" placeholder="How did you start hearing God?" style="height: 120px"></textarea>
+                                            <span asp-validation-for="HowTheyStartedHearingGod" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <textarea asp-for="CoverSpeech" class="form-control" placeholder="Why do you want to join Flow?" style="height: 120px" required></textarea>
-                                                <label asp-for="CoverSpeech"></label>
-                                                <span asp-validation-for="CoverSpeech" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label asp-for="CoverSpeech" class="form-label"></label>
+                                            <textarea asp-for="CoverSpeech" class="form-control" placeholder="Why do you want to join Flow?" style="height: 120px" required></textarea>
+                                            <span asp-validation-for="CoverSpeech" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Audition & Status Section -->
-                            <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
-                                <div class="card-body p-4">
-                                    <h4 class="mb-4 pb-2 border-bottom">Audition & Status</h4>
-                                    
-                                    <div class="row g-3">
-                                        <div class="col-12">
+                             <div class="glass-effect border border-info border-opacity-50 rounded-4 p-4 mb-4">
+                                <h5 class="text-info fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar-event"></i>
+                                    Audition & Status
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="mb-3">
                                             <div class="form-check">
                                                 <input asp-for="ShortlistedForAudition" class="form-check-input" type="checkbox" />
                                                 <label asp-for="ShortlistedForAudition" class="form-check-label"></label>
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="AuditionDate" type="date" class="form-control" />
-                                                <label asp-for="AuditionDate"></label>
-                                                <span asp-validation-for="AuditionDate" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="AuditionDate" class="form-label"></label>
+                                            <input asp-for="AuditionDate" type="date" class="form-control" />
+                                            <span asp-validation-for="AuditionDate" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <input asp-for="AuditionTime" type="time" class="form-control" />
-                                                <label asp-for="AuditionTime"></label>
-                                                <span asp-validation-for="AuditionTime" class="text-danger"></span>
-                                            </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="AuditionTime" class="form-label"></label>
+                                            <input asp-for="AuditionTime" type="time" class="form-control" />
+                                            <span asp-validation-for="AuditionTime" class="text-danger"></span>
                                         </div>
-                                        
-                                        <div class="col-md-6">
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <div class="form-check">
                                                 <input asp-for="AcceptedIntoFlow" class="form-check-input" type="checkbox" />
                                                 <label asp-for="AcceptedIntoFlow" class="form-check-label"></label>
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-md-6">
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <div class="form-check">
                                                 <input asp-for="IsActive" class="form-check-input" type="checkbox" />
                                                 <label asp-for="IsActive" class="form-check-label"></label>
@@ -184,11 +283,11 @@
                             
                             <!-- Form Actions -->
                             <div class="d-flex gap-2 justify-content-end">
-                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-lg px-4">
-                                    <i class="bi bi-x-circle"></i> Cancel
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-glass-secondary hover-lift fw-semibold px-4 py-2 rounded-3">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
                                 </a>
-                                <button type="submit" class="btn btn-primary btn-lg px-4">
-                                    <i class="bi bi-save"></i> Save Changes
+                                <button type="submit" class="btn btn-warning hover-lift fw-bold px-4 py-2 rounded-3 text-black">
+                                    <i class="bi bi-save me-2"></i>Save Changes
                                 </button>
                             </div>
                         </form>

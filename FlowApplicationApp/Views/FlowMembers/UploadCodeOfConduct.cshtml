@@ -1,0 +1,247 @@
+@model FlowApplicationApp.ViewModels.FlowMembers.UploadMemberCodeOfConductViewModel
+
+@{
+    ViewBag.Title = "Upload Code of Conduct";
+    Layout = "_Layout";
+}
+
+<style>
+    .upload-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 3rem 0;
+    }
+    
+    .upload-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid var(--bs-warning) !important;
+        border-radius: 1.5rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--bs-warning) 0%, #f0ad4e 100%);
+        color: #000000;
+        font-weight: 700;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        padding: 1.5rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+        color: #ffffff;
+    }
+    
+    .form-label-custom {
+        color: var(--bs-warning);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control-custom {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        color: #ffffff;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-control-custom:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--bs-warning);
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        color: #ffffff;
+    }
+    
+    .form-control-custom::file-selector-button {
+        background: var(--bs-warning);
+        color: #000000;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        margin-right: 1rem;
+        cursor: pointer;
+    }
+    
+    .form-control-custom::file-selector-button:hover {
+        background: #f0ad4e;
+    }
+    
+    .form-text-custom {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .alert-custom {
+        border-radius: 1rem;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+    
+    .alert-success-custom {
+        background: rgba(40, 167, 69, 0.2);
+        border: 1px solid rgba(40, 167, 69, 0.5);
+        color: #5af78e;
+    }
+    
+    .alert-danger-custom {
+        background: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.5);
+        color: #ff6b6b;
+    }
+    
+    .alert-info-custom {
+        background: rgba(13, 202, 240, 0.2);
+        border: 1px solid rgba(13, 202, 240, 0.5);
+        color: #5ddef4;
+    }
+    
+    .btn-custom-primary {
+        background: var(--bs-warning);
+        color: #000000;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom-primary:hover {
+        background: #f0ad4e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        color: #000000;
+    }
+    
+    .btn-custom-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+    
+    .info-box {
+        background: rgba(13, 202, 240, 0.1);
+        border: 1px solid rgba(13, 202, 240, 0.3);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+    }
+    
+    .info-box h6 {
+        color: #5ddef4;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .info-box ul {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0;
+    }
+    
+    .info-box li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="upload-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card upload-card">
+                    <div class="card-header card-header-custom">
+                        <h2 class="mb-0 h3">
+                            <i class="bi bi-file-earmark-pdf-fill me-2"></i>Upload Code of Conduct
+                        </h2>
+                    </div>
+                    <div class="card-body card-body-custom">
+                        @if (Model.IsSuccess)
+                        {
+                            <div class="alert alert-success-custom alert-custom" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <strong>Success!</strong> @Model.Message
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(Model.DownloadUrl))
+                            {
+                                <div class="mt-4 d-flex gap-2 flex-wrap">
+                                    <a href="@Model.DownloadUrl" class="btn btn-custom-primary">
+                                        <i class="bi bi-download me-2"></i>Download Your Document
+                                    </a>
+                                    <a href="@Url.Action("Index", "Home")" class="btn btn-custom-secondary">
+                                        <i class="bi bi-house-fill me-2"></i>Go to Home
+                                    </a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            @if (!string.IsNullOrEmpty(Model.Message))
+                            {
+                                <div class="alert alert-danger-custom alert-custom" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>Notice:</strong> @Model.Message
+                                </div>
+                            }
+
+                            <form method="post" enctype="multipart/form-data" asp-action="UploadCodeOfConduct" asp-controller="FlowMembers">
+                                @Html.AntiForgeryToken()
+                                
+                                <div class="mb-4">
+                                    <label for="file" class="form-label form-label-custom">
+                                        <i class="bi bi-file-earmark-pdf me-2"></i>Select Your Signed PDF
+                                    </label>
+                                    <input type="file" 
+                                           class="form-control form-control-custom" 
+                                           id="file" 
+                                           name="file" 
+                                           accept=".pdf" 
+                                           required />
+                                    <div class="form-text form-text-custom">
+                                        <i class="bi bi-info-circle me-1"></i>Only PDF files are accepted. Maximum file size: 10MB
+                                    </div>
+                                </div>
+
+                                <div class="info-box">
+                                    <h6>
+                                        <i class="bi bi-info-circle-fill me-2"></i>Important Information:
+                                    </h6>
+                                    <ul>
+                                        <li>You must upload a signed copy of the Code of Conduct to activate your membership</li>
+                                        <li>Please ensure your document is clearly legible and properly signed</li>
+                                        <li>Your uploaded document will be securely stored</li>
+                                        <li>You can re-upload if you need to replace your document</li>
+                                        <li>Only you and administrators can access your uploaded document</li>
+                                    </ul>
+                                </div>
+
+                                <div class="d-flex gap-2 flex-wrap justify-content-end mt-4">
+                                    <a href="@Url.Action("Index", "Home")" class="btn btn-custom-secondary">
+                                        <i class="bi bi-x-circle me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-custom-primary">
+                                        <i class="bi bi-upload me-2"></i>Upload Document
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

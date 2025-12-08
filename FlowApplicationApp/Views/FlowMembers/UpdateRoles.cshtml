@@ -1,0 +1,326 @@
+@model FlowApplicationApp.ViewModels.FlowMembers.UpdateMemberRolesViewModel
+
+@{
+    ViewBag.Title = "Update Member Roles";
+    Layout = "_Layout";
+}
+
+<style>
+    .roles-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 3rem 0;
+    }
+    
+    .roles-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid var(--bs-warning) !important;
+        border-radius: 1.5rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--bs-warning) 0%, #f0ad4e 100%);
+        color: #000000;
+        font-weight: 700;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        padding: 1.5rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+        color: #ffffff;
+    }
+    
+    .member-info-section {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 193, 7, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .member-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--bs-warning);
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .member-details h4 {
+        color: var(--bs-warning);
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+    }
+    
+    .member-details p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.25rem;
+    }
+    
+    .roles-section-title {
+        color: var(--bs-warning);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    
+    .current-roles-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .role-badge {
+        background: rgba(40, 167, 69, 0.2);
+        border: 1px solid rgba(40, 167, 69, 0.5);
+        color: #5af78e;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .role-checkbox-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 193, 7, 0.2);
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .role-checkbox-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 193, 7, 0.4);
+    }
+    
+    .role-checkbox-item.selected {
+        background: rgba(255, 193, 7, 0.15);
+        border-color: var(--bs-warning);
+    }
+    
+    .role-checkbox-item input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 1rem;
+        cursor: pointer;
+        accent-color: var(--bs-warning);
+    }
+    
+    .role-name {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .role-description {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+    
+    .alert-custom {
+        border-radius: 1rem;
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert-danger-custom {
+        background: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.5);
+        color: #ff6b6b;
+    }
+    
+    .btn-custom-primary {
+        background: var(--bs-warning);
+        color: #000000;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom-primary:hover {
+        background: #f0ad4e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        color: #000000;
+    }
+    
+    .btn-custom-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+    
+    @@media (max-width: 768px) {
+        .member-info-section {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="roles-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card roles-card">
+                    <div class="card-header card-header-custom">
+                        <h2 class="mb-0 h3">
+                            <i class="bi bi-person-gear me-2"></i>Update Member Roles
+                        </h2>
+                    </div>
+                    <div class="card-body card-body-custom">
+                        <!-- Member Info Section -->
+                        <div class="member-info-section">
+                            <img src="@(!string.IsNullOrEmpty(Model.ProfileImageUrl) ? Model.ProfileImageUrl : "/img/default-avatar.png")" 
+                                 alt="@Model.MemberName" 
+                                 class="member-avatar" />
+                            <div class="member-details">
+                                <h4>@Model.MemberName</h4>
+                                <p><i class="bi bi-envelope me-2"></i>@Model.Email</p>
+                                @if (Model.CurrentRoles.Any())
+                                {
+                                    <div class="current-roles-badges mt-2">
+                                        @foreach (var role in Model.CurrentRoles)
+                                        {
+                                            <span class="role-badge">
+                                                <i class="bi bi-shield-check me-1"></i>@role
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted"><i class="bi bi-info-circle me-1"></i>No roles assigned</p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Validation Errors -->
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger-custom alert-custom">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Error:</strong>
+                                <ul class="mb-0 mt-2">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <!-- Role Selection Form -->
+                        <form method="post" asp-action="UpdateRoles" asp-controller="FlowMembers" id="rolesForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="MemberId" />
+                            <input type="hidden" asp-for="MemberName" />
+                            <input type="hidden" asp-for="Email" />
+                            <input type="hidden" asp-for="ProfileImageUrl" />
+                            
+                            <h5 class="roles-section-title">
+                                <i class="bi bi-list-check me-2"></i>Available Roles
+                            </h5>
+                            
+                            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1.5rem;">
+                                Select the roles you want to assign to this member. Changes will take effect immediately.
+                            </p>
+
+                            <div class="roles-list">
+                                @for (int i = 0; i < Model.AvailableRoles.Count; i++)
+                                {
+                                    var role = Model.AvailableRoles[i];
+                                    <label class="role-checkbox-item @(role.IsSelected ? "selected" : "")" for="role_@i">
+                                        <div class="d-flex align-items-start">
+                                            <input type="checkbox" 
+                                                   id="role_@i" 
+                                                   name="SelectedRoles" 
+                                                   value="@role.RoleName" 
+                                                   @(role.IsSelected ? "checked" : "")
+                                                   onchange="toggleRoleSelection(this)" />
+                                            <div>
+                                                <div class="role-name">@role.RoleName</div>
+                                                @if (!string.IsNullOrEmpty(role.RoleDescription))
+                                                {
+                                                    <div class="role-description">@role.RoleDescription</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap justify-content-end mt-4">
+                                <a href="@Url.Action("Details", "FlowMembers", new { id = Model.MemberId })" 
+                                   class="btn btn-custom-secondary">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-custom-primary" id="saveButton">
+                                    <i class="bi bi-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleRoleSelection(checkbox) {
+            const label = checkbox.closest('.role-checkbox-item');
+            if (checkbox.checked) {
+                label.classList.add('selected');
+            } else {
+                label.classList.remove('selected');
+            }
+        }
+        
+        // Confirm before saving
+        document.getElementById('rolesForm').addEventListener('submit', function(e) {
+            const selectedRoles = document.querySelectorAll('input[name="SelectedRoles"]:checked');
+            const roleNames = Array.from(selectedRoles).map(r => r.value).join(', ');
+            
+            if (selectedRoles.length === 0) {
+                if (!confirm('No roles will be assigned to this member. Are you sure you want to continue?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            } else {
+                if (!confirm(`Assign the following roles: ${roleNames}?\n\nThis will update the member's permissions immediately.`)) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        });
+    </script>
+}

@@ -54,7 +54,6 @@ public static class SeedClass
 
     public static FlowMember[] PrepareAdminMemberSeed()
     {
-        UserManager<FlowMember> userManager = null!; // Placeholder to avoid errors
         return
         [
             new()

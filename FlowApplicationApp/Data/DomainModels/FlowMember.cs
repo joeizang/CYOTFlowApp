@@ -53,4 +53,11 @@ public class FlowMember : IdentityUser<Guid>
         public bool IsActive { get; set; }
 
         public bool IsDeleted { get; set; }
+        
+        // Code of Conduct PDF Upload Properties
+        public string? CodeOfConductPdfPath { get; set; }
+        
+        public bool HasUploadedCodeOfConduct { get; set; }
+        
+        public DateTime? CodeOfConductUploadedAt { get; set; }
 }

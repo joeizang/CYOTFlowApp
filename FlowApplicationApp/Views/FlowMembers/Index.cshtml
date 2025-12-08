@@ -209,6 +209,23 @@
                                     <div class="member-status-badge @(member.IsActive ? "status-active" : "status-inactive")"></div>
                                 </div>
                                 
+                                @if (member.HasUploadedCodeOfConduct)
+                                {
+                                    <div style="text-align: center; margin-top: 0.5rem;">
+                                        <span style="color: #28a745; font-size: 0.875rem;">
+                                            <i class="bi bi-file-earmark-check-fill"></i> CoC Uploaded
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="text-align: center; margin-top: 0.5rem;">
+                                        <span style="color: #ffc107; font-size: 0.875rem;">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> CoC Pending
+                                        </span>
+                                    </div>
+                                }
+                                
                                 <h3 class="member-name">@member.FullName</h3>
                                 
                                 <p class="member-username">@@@member.UserName</p>

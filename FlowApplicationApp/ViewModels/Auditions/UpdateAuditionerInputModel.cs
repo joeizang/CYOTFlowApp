@@ -51,11 +51,11 @@ public class UpdateAuditionerInputModel
 
     [Required]
     [DataType(DataType.Date)]
-    [Display(Name = "When were you baptized in the Holy Spirit?")]
+    [Display(Name = "When were you Holy Spirit baptized?")]
     public DateTime HolySpiritBaptismDate { get; set; }
 
     [Required]
-    [Display(Name = "Do you hear God speaking to you?")]
+    [Display(Name = "Do you hear God speak to you?")]
     public bool HearsGod { get; set; }
 
     [MaxLength(1000)]

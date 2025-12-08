@@ -1,9 +1,12 @@
 using FlowApplicationApp.Data;
+using FlowApplicationApp.Data.DomainModels;
 using FlowApplicationApp.Infrastructure.Extensions;
 using FlowApplicationApp.Infrastructure.Services;
 using FlowApplicationApp.ViewModels.Auditions;
+using FlowApplicationApp.ViewModels.FlowMembers;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +19,8 @@ namespace FlowApplicationApp.Controllers
         IValidator<CreateAuditionerInputModel> validator,
         IWebHostEnvironment hosting,
         ApplicationDbContext context,
+        UserManager<FlowMember> userManager,
+        RoleManager<FlowRoles> roleManager,
         IEmailSender emailSender)
         : Controller
     {
@@ -270,12 +275,46 @@ namespace FlowApplicationApp.Controllers
                         IsDeleted = false
                     };
                     
-                    context.FlowMembers.Add(flowMember);
+                    // context.FlowMembers.Add(flowMember);
+                    var identityResult = await userManager.CreateAsync(flowMember, "Welcome@123").ConfigureAwait(false);
+                    if (identityResult.Succeeded)
+                    {
+                        _logger.LogInformation(
+                            "FlowMember created successfully for auditioner {AuditionerId} with email {Email}",
+                            auditioner.Id,
+                            auditioner.Email
+                        );
+                        // Assign "Member" role
+                        await userManager.AddToRolesAsync(flowMember, ["Member", "Vocalist"]).ConfigureAwait(false);
+                    }
                 }
             }
             
             await context.SaveChangesAsync(token).ConfigureAwait(false);
             return RedirectToAction("Details", new { id = auditioner.Id });
+        }
+
+        [HttpPost("update-member-roles")]
+        public async Task<IActionResult> UpdateFlowMemberRoles(UpdateMemberRolesInputModel rolesInputModel, CancellationToken token)
+        {
+            var member = await userManager.FindByIdAsync(rolesInputModel.MemberId.ToString()).ConfigureAwait(false);
+            if (member == null) return NotFound();
+
+            var currentRoles = await userManager.GetRolesAsync(member).ConfigureAwait(false);
+            var rolesToAdd = rolesInputModel.Roles.Except(currentRoles).ToList();
+            var rolesToRemove = currentRoles.Except(rolesInputModel.Roles).ToList();
+
+            if (rolesToAdd.Count != 0)
+            {
+                await userManager.AddToRolesAsync(member, rolesToAdd).ConfigureAwait(false);
+            }
+
+            if (rolesToRemove.Count != 0)
+            {
+                await userManager.RemoveFromRolesAsync(member, rolesToRemove).ConfigureAwait(false);
+            }
+
+            return RedirectToAction("Details", "FlowMembers", new { id = rolesInputModel.MemberId });
         }
     }
 }

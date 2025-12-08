@@ -39,4 +39,11 @@ public class FlowMemberDetailsViewModel
     public bool IsActive { get; set; }
     
     public List<string> Roles { get; set; } = new();
+    
+    // Code of Conduct Properties
+    public bool HasUploadedCodeOfConduct { get; set; }
+    
+    public DateTime? CodeOfConductUploadedAt { get; set; }
+    
+    public string? CodeOfConductPdfPath { get; set; }
 }

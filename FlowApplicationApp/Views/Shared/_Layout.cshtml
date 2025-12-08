@@ -28,7 +28,7 @@
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Auditions" ? "active text-warning" : "")" asp-area="" asp-controller="Auditions" asp-action="Index">Auditions</a>
                     </li>
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Admin") || User.IsInRole("Member"))
                     {
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "FlowMembers" ? "active text-warning" : "")" asp-area="" asp-controller="FlowMembers" asp-action="Index">Flow Members</a>

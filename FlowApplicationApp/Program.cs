@@ -36,6 +36,7 @@ builder.Services.AddScoped<RoleManager<FlowRoles>>();
 // Register document conversion services
 builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IDocumentConversionService, FlowApplicationApp.Infrastructure.Services.DocumentConversionService>();
 builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.ICodeOfConductService, FlowApplicationApp.Infrastructure.Services.CodeOfConductService>();
+builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IMemberCodeOfConductService, FlowApplicationApp.Infrastructure.Services.MemberCodeOfConductService>();
 
 // Register email service
 builder.Services.AddScoped<FlowApplicationApp.Infrastructure.Services.IEmailSender, FlowApplicationApp.Infrastructure.Services.EmailSender>();
@@ -83,13 +84,15 @@ await using (var scope = app.Services.CreateAsyncScope())
 
     foreach (var member in SeedClass.PrepareAdminMemberSeed())
     {
-        var user = await userManager.FindByEmailAsync(member?.Email);
+        if (string.IsNullOrEmpty(member?.Email)) continue;
+        
+        var user = await userManager.FindByEmailAsync(member.Email);
         if (user == null)
         {
             var createdUser = await userManager.CreateAsync(member, env?["ADMIN_PASSWORD"] ?? "John832=>2026");
             if (createdUser.Succeeded)
             {
-                await userManager.AddToRoleAsync(member, "Admin");
+                await userManager.AddToRolesAsync(member, ["Admin", "Member"]);
             }
         }        
     }
