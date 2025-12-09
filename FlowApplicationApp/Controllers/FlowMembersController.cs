@@ -350,5 +350,214 @@ namespace FlowApplicationApp.Controllers
                 return View(model);
             }
         }
+        
+        // Edit Member Actions
+        
+        [HttpGet("edit/{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(Guid id, CancellationToken cancellationToken)
+        {
+            var member = await _context.FlowMembers.AsNoTracking()
+                .Where(m => m.Id == id && !m.IsDeleted)
+                .FirstOrDefaultAsync(cancellationToken);
+                
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new EditFlowMemberViewModel
+            {
+                Id = member.Id,
+                FirstName = member.FirstName,
+                LastName = member.LastName,
+                Email = member.Email ?? string.Empty,
+                DoB = member.DoB,
+                WhatsAppNumber = member.WhatsAppNumber,
+                Bio = member.Bio,
+                BornAgainDate = member.BornAgainDate,
+                ProfileImageUrl = member.ProfileImageUrl,
+                WaterBaptismDate = member.WaterBaptismDate,
+                HolySpiritBaptismDate = member.HolySpiritBaptismDate,
+                HearsGod = member.HearsGod,
+                HowTheyStartedHearingGod = member.HowTheyStartedHearingGod,
+                CoverSpeech = member.CoverSpeech,
+                IsActive = member.IsActive,
+                HasUploadedCodeOfConduct = member.HasUploadedCodeOfConduct,
+                CodeOfConductUploadedAt = member.CodeOfConductUploadedAt,
+                CurrentCodeOfConductPdfPath = member.CodeOfConductPdfPath
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("edit/{id:guid?}")]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditFlowMemberViewModel model, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var member = await _context.FlowMembers
+                .Where(m => m.Id == model.Id && !m.IsDeleted)
+                .FirstOrDefaultAsync(cancellationToken);
+                
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                // Update member properties
+                member.FirstName = model.FirstName;
+                member.LastName = model.LastName;
+                member.Email = model.Email;
+                member.DoB = model.DoB;
+                member.WhatsAppNumber = model.WhatsAppNumber;
+                member.Bio = model.Bio;
+                member.BornAgainDate = model.BornAgainDate;
+                member.ProfileImageUrl = model.ProfileImageUrl;
+                member.WaterBaptismDate = model.WaterBaptismDate;
+                member.HolySpiritBaptismDate = model.HolySpiritBaptismDate;
+                member.HearsGod = model.HearsGod;
+                member.HowTheyStartedHearingGod = model.HowTheyStartedHearingGod;
+                member.CoverSpeech = model.CoverSpeech;
+                member.IsActive = model.IsActive;
+                member.UpdatedOn = DateTime.UtcNow;
+
+                // Handle Code of Conduct PDF upload if provided
+                if (model.CodeOfConductPdf != null && model.CodeOfConductPdf.Length > 0)
+                {
+                    var filePath = await _memberCocService.UploadMemberCodeOfConductAsync(
+                        model.CodeOfConductPdf, 
+                        member.Id, 
+                        cancellationToken);
+                    
+                    member.CodeOfConductPdfPath = filePath;
+                    member.HasUploadedCodeOfConduct = true;
+                    member.CodeOfConductUploadedAt = DateTime.UtcNow;
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+                
+                TempData["SuccessMessage"] = $"Successfully updated {member.FirstName} {member.LastName}'s profile.";
+                return RedirectToAction("Details", new { id = member.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating member {MemberId}", model.Id);
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the member. Please try again.");
+                return View(model);
+            }
+        }
+        
+        // Delete Member Actions
+        
+        [HttpPost("soft-delete/{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SoftDelete(Guid id, CancellationToken cancellationToken)
+        {
+            var member = await _context.FlowMembers
+                .Where(m => m.Id == id && !m.IsDeleted)
+                .FirstOrDefaultAsync(cancellationToken);
+                
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                member.IsDeleted = true;
+                member.IsActive = false;
+                member.UpdatedOn = DateTime.UtcNow;
+                
+                // Deactivate associated auditions
+                var auditions = await _context.FlowAuditioners
+                    .Where(a => a.Email == member.Email)
+                    .ToListAsync(cancellationToken);
+                
+                foreach (var audition in auditions)
+                {
+                    audition.IsActive = false;
+                    audition.UpdatedOn = DateTime.UtcNow;
+                }
+                
+                await _context.SaveChangesAsync(cancellationToken);
+                
+                TempData["SuccessMessage"] = $"Successfully deactivated {member.FirstName} {member.LastName}.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error soft deleting member {MemberId}", id);
+                TempData["ErrorMessage"] = "An error occurred while deactivating the member. Please try again.";
+                return RedirectToAction("Details", new { id });
+            }
+        }
+
+        [HttpPost("hard-delete/{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> HardDelete(Guid id, CancellationToken cancellationToken)
+        {
+            // Only allow super admin to hard delete
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (currentUserEmail != "josephizang@gmail.com")
+            {
+                TempData["ErrorMessage"] = "You do not have permission to perform this action.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            var member = await _context.FlowMembers
+                .Where(m => m.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+                
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                // Deactivate associated auditions
+                var auditions = await _context.FlowAuditioners
+                    .Where(a => a.Email == member.Email)
+                    .ToListAsync(cancellationToken);
+                
+                foreach (var audition in auditions)
+                {
+                    audition.IsActive = false;
+                    audition.UpdatedOn = DateTime.UtcNow;
+                }
+                
+                // Delete Code of Conduct file if exists
+                if (!string.IsNullOrEmpty(member.CodeOfConductPdfPath))
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", member.CodeOfConductPdfPath.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
+                _context.FlowMembers.Remove(member);
+                await _context.SaveChangesAsync(cancellationToken);
+                
+                TempData["SuccessMessage"] = $"Successfully permanently deleted {member.FirstName} {member.LastName}.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error hard deleting member {MemberId}", id);
+                TempData["ErrorMessage"] = "An error occurred while deleting the member. Please try again.";
+                return RedirectToAction("Details", new { id });
+            }
+        }
     }
 }

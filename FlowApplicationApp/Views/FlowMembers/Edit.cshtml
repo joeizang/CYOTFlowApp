@@ -1,0 +1,295 @@
+@model FlowApplicationApp.ViewModels.FlowMembers.EditFlowMemberViewModel
+
+@{
+    ViewData["Title"] = "Edit Flow Member";
+}
+
+<style>
+    .page-bg {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+    }
+    
+    .header-gradient {
+        background: linear-gradient(135deg, var(--bs-warning) 0%, #f0ad4e 100%);
+    }
+    
+    .form-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+    
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--bs-warning);
+        color: #ffffff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+    
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--bs-warning);
+        border-color: var(--bs-warning);
+    }
+    
+    .form-check-label {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+    }
+    
+    .btn-glass-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+    
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+    }
+    
+    .current-pdf-info {
+        background: rgba(13, 202, 240, 0.1);
+        border: 1px solid rgba(13, 202, 240, 0.3);
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+</style>
+
+<div class="page-bg min-vh-100 py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card glass-effect border-2 border-warning rounded-4 shadow-lg overflow-hidden">
+                    <div class="card-header header-gradient text-black p-4 border-0">
+                        <h2 class="mb-0 h3 fw-bold">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Flow Member
+                        </h2>
+                    </div>
+                    <div class="card-body p-4 p-lg-5">
+                        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="HasUploadedCodeOfConduct" />
+                            <input type="hidden" asp-for="CodeOfConductUploadedAt" />
+                            <input type="hidden" asp-for="CurrentCodeOfConductPdfPath" />
+                            
+                            <div asp-validation-summary="ModelOnly" class="alert text-bg-danger rounded-4 mb-4"></div>
+                            
+                            <!-- Personal Information Section -->
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-badge"></i>
+                                    Personal Information
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label asp-for="FirstName" class="form-label"></label>
+                                        <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label asp-for="LastName" class="form-label"></label>
+                                        <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label asp-for="Email" class="form-label"></label>
+                                        <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label asp-for="WhatsAppNumber" class="form-label"></label>
+                                        <input asp-for="WhatsAppNumber" class="form-control" placeholder="+234 xxx xxx xxxx" />
+                                        <span asp-validation-for="WhatsAppNumber" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label asp-for="DoB" class="form-label"></label>
+                                        <input asp-for="DoB" class="form-control" type="date" />
+                                        <span asp-validation-for="DoB" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label asp-for="ProfileImageUrl" class="form-label"></label>
+                                        <input asp-for="ProfileImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                                        <span asp-validation-for="ProfileImageUrl" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label asp-for="Bio" class="form-label"></label>
+                                        <textarea asp-for="Bio" class="form-control" rows="4" placeholder="Tell us about yourself..."></textarea>
+                                        <span asp-validation-for="Bio" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Spiritual Journey Section -->
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-heart"></i>
+                                    Spiritual Journey
+                                </h5>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label asp-for="BornAgainDate" class="form-label"></label>
+                                        <input asp-for="BornAgainDate" class="form-control" type="date" />
+                                        <span asp-validation-for="BornAgainDate" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <label asp-for="WaterBaptismDate" class="form-label"></label>
+                                        <input asp-for="WaterBaptismDate" class="form-control" type="date" />
+                                        <span asp-validation-for="WaterBaptismDate" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <label asp-for="HolySpiritBaptismDate" class="form-label"></label>
+                                        <input asp-for="HolySpiritBaptismDate" class="form-control" type="date" />
+                                        <span asp-validation-for="HolySpiritBaptismDate" class="text-danger small"></span>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input asp-for="HearsGod" class="form-check-input" type="checkbox" />
+                                            <label asp-for="HearsGod" class="form-check-label"></label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label asp-for="HowTheyStartedHearingGod" class="form-label"></label>
+                                        <textarea asp-for="HowTheyStartedHearingGod" class="form-control" rows="4" placeholder="Describe how they started hearing God..."></textarea>
+                                        <span asp-validation-for="HowTheyStartedHearingGod" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Why They Joined Flow Section -->
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-chat-quote"></i>
+                                    Why They Joined Flow
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="CoverSpeech" class="form-label"></label>
+                                    <textarea asp-for="CoverSpeech" class="form-control" rows="5" placeholder="Their cover speech or reasons for joining Flow..."></textarea>
+                                    <span asp-validation-for="CoverSpeech" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Code of Conduct Section -->
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                    Code of Conduct PDF
+                                </h5>
+                                
+                                @if (Model.HasUploadedCodeOfConduct)
+                                {
+                                    <div class="current-pdf-info mb-3">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                            <div>
+                                                <span class="badge bg-success me-2">
+                                                    <i class="bi bi-file-earmark-check-fill me-1"></i>Current Document
+                                                </span>
+                                                @if (Model.CodeOfConductUploadedAt.HasValue)
+                                                {
+                                                    <span class="text-white-50">
+                                                        Uploaded on @Model.CodeOfConductUploadedAt.Value.ToString("MMM dd, yyyy")
+                                                    </span>
+                                                }
+                                            </div>
+                                            <a href="@Url.Action("DownloadCodeOfConduct", "FlowMembers", new { id = Model.Id })" 
+                                               class="btn btn-sm btn-info text-white">
+                                                <i class="bi bi-download"></i> Download Current
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="mb-3">
+                                    <label asp-for="CodeOfConductPdf" class="form-label">
+                                        @(Model.HasUploadedCodeOfConduct ? "Upload New Code of Conduct PDF (Optional)" : "Upload Code of Conduct PDF (Optional)")
+                                    </label>
+                                    <input asp-for="CodeOfConductPdf" class="form-control" type="file" accept=".pdf" />
+                                    <div class="form-text text-white-50">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Only PDF files are allowed. Maximum file size: 5MB.
+                                        @if (Model.HasUploadedCodeOfConduct)
+                                        {
+                                            <span> Uploading a new file will replace the existing one.</span>
+                                        }
+                                    </div>
+                                    <span asp-validation-for="CodeOfConductPdf" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Status Section -->
+                            <div class="glass-effect border border-warning border-opacity-25 rounded-4 p-4 mb-4">
+                                <h5 class="text-warning fw-bold fs-5 mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-toggle-on"></i>
+                                    Account Status
+                                </h5>
+                                
+                                <div class="form-check">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsActive" class="form-check-label"></label>
+                                    <div class="form-text text-white-50">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Inactive members cannot access the system.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 flex-wrap justify-content-end mt-4">
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-glass-secondary hover-lift fw-semibold px-4 py-2 rounded-3">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-warning hover-lift fw-bold px-4 py-2 rounded-3 text-black">
+                                    <i class="bi bi-check-circle me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

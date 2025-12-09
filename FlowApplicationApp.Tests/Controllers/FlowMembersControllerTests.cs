@@ -518,6 +518,381 @@ public class FlowMembersControllerTests : IDisposable
 
     #endregion
 
+    #region Edit Member Tests
+
+    [Fact]
+    public async Task Edit_Get_AsAdmin_WithValidId_ShouldReturnViewWithModel()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            CoverSpeech = "I joined Flow to serve God and grow spiritually.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.Edit(memberId, CancellationToken.None);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<EditFlowMemberViewModel>(viewResult.Model);
+        Assert.Equal(memberId, model.Id);
+        Assert.Equal("John", model.FirstName);
+        Assert.Equal("Doe", model.LastName);
+        Assert.Equal("john.doe@example.com", model.Email);
+    }
+
+    [Fact]
+    public async Task Edit_Get_WithDeletedMember_ShouldReturnNotFound()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            IsDeleted = true
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.Edit(memberId, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Edit_Post_AsAdmin_WithValidData_ShouldUpdateMember()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            CoverSpeech = "I joined Flow to serve God.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        var viewModel = new EditFlowMemberViewModel
+        {
+            Id = memberId,
+            FirstName = "Jane",
+            LastName = "Smith",
+            Email = "jane.smith@example.com",
+            DoB = new DateTime(1991, 2, 2),
+            WhatsAppNumber = "+234 987 654 3210",
+            Bio = "Updated bio with sufficient length to meet requirements for the FlowMember entity validation.",
+            BornAgainDate = new DateTime(2011, 2, 2),
+            ProfileImageUrl = "https://example.com/newprofile.jpg",
+            WaterBaptismDate = new DateTime(2012, 2, 2),
+            HolySpiritBaptismDate = new DateTime(2013, 2, 2),
+            HearsGod = false,
+            HowTheyStartedHearingGod = "Updated testimony about hearing God's voice through scripture reading and meditation on His word over time.",
+            CoverSpeech = "Updated cover speech.",
+            IsActive = false
+        };
+
+        // Act
+        var result = await _controller.Edit(viewModel, CancellationToken.None);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirectResult.ActionName);
+        
+        var updatedMember = await _context.FlowMembers.FindAsync(memberId);
+        Assert.NotNull(updatedMember);
+        Assert.Equal("Jane", updatedMember.FirstName);
+        Assert.Equal("Smith", updatedMember.LastName);
+        Assert.False(updatedMember.IsActive);
+    }
+
+    [Fact]
+    public async Task Edit_Post_AsAdmin_WithCodeOfConductPdf_ShouldUploadAndUpdateMember()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        var file = CreateMockPdfFile("code-of-conduct.pdf", 1024);
+        var filePath = "code-of-conduct/members/test.pdf";
+        
+        _memberCocService.UploadMemberCodeOfConductAsync(file, memberId, Arg.Any<CancellationToken>())
+            .Returns(filePath);
+
+        var viewModel = new EditFlowMemberViewModel
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            CodeOfConductPdf = file
+        };
+
+        // Act
+        var result = await _controller.Edit(viewModel, CancellationToken.None);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirectResult.ActionName);
+        
+        var updatedMember = await _context.FlowMembers.FindAsync(memberId);
+        Assert.NotNull(updatedMember);
+        Assert.True(updatedMember.HasUploadedCodeOfConduct);
+        Assert.NotNull(updatedMember.CodeOfConductUploadedAt);
+        Assert.Equal(filePath, updatedMember.CodeOfConductPdfPath);
+    }
+
+    #endregion
+
+    #region Delete Member Tests
+
+    [Fact]
+    public async Task SoftDelete_AsAdmin_WithValidId_ShouldMarkAsDeleted()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.SoftDelete(memberId, CancellationToken.None);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        
+        var deletedMember = await _context.FlowMembers.FindAsync(memberId);
+        Assert.NotNull(deletedMember);
+        Assert.True(deletedMember.IsDeleted);
+        Assert.False(deletedMember.IsActive);
+    }
+
+    [Fact]
+    public async Task SoftDelete_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUser(Guid.NewGuid(), isAdmin: true);
+
+        // Act
+        var result = await _controller.SoftDelete(memberId, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task HardDelete_AsSuperAdmin_WithValidId_ShouldDeletePermanently()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUserWithEmail(Guid.NewGuid(), "josephizang@gmail.com", isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.HardDelete(memberId, CancellationToken.None);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        
+        var deletedMember = await _context.FlowMembers.FindAsync(memberId);
+        Assert.Null(deletedMember);
+    }
+
+    [Fact]
+    public async Task HardDelete_AsRegularAdmin_ShouldRedirectWithError()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUserWithEmail(Guid.NewGuid(), "admin@example.com", isAdmin: true);
+        
+        var member = new FlowMember
+        {
+            Id = memberId,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            UserName = "johndoe",
+            DoB = new DateTime(1990, 1, 1),
+            WhatsAppNumber = "+234 123 456 7890",
+            Bio = "This is a test bio that meets the minimum length requirement for the FlowMember entity.",
+            BornAgainDate = new DateTime(2010, 1, 1),
+            ProfileImageUrl = "https://example.com/profile.jpg",
+            WaterBaptismDate = new DateTime(2011, 1, 1),
+            HolySpiritBaptismDate = new DateTime(2012, 1, 1),
+            HearsGod = true,
+            HowTheyStartedHearingGod = "Through prayer and fasting, I began to hear the voice of God clearly and consistently over a period of time.",
+            IsActive = true,
+            IsDeleted = false
+        };
+        
+        await _context.FlowMembers.AddAsync(member);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.HardDelete(memberId, CancellationToken.None);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirectResult.ActionName);
+        Assert.Equal(memberId, redirectResult.RouteValues?["id"]);
+        
+        var member2 = await _context.FlowMembers.FindAsync(memberId);
+        Assert.NotNull(member2); // Member should still exist
+    }
+
+    [Fact]
+    public async Task HardDelete_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var memberId = Guid.NewGuid();
+        SetupAuthenticatedUserWithEmail(Guid.NewGuid(), "josephizang@gmail.com", isAdmin: true);
+
+        // Act
+        var result = await _controller.HardDelete(memberId, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private void SetupAuthenticatedUser(Guid userId, bool isAdmin = false)
@@ -526,6 +901,32 @@ public class FlowMembersControllerTests : IDisposable
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(ClaimTypes.Name, "testuser")
+        };
+
+        if (isAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = claimsPrincipal
+            }
+        };
+    }
+
+    private void SetupAuthenticatedUserWithEmail(Guid userId, string email, bool isAdmin = false)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.Name, "testuser"),
+            new(ClaimTypes.Email, email)
         };
 
         if (isAdmin)

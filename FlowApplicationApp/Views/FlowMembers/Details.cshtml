@@ -266,12 +266,18 @@
                                 <a asp-action="UpdateRoles" asp-route-id="@Model.Id" class="btn btn-warning hover-lift fw-bold px-4 py-2 rounded-3 text-black">
                                     <i class="bi bi-person-gear me-2"></i>Manage Roles
                                 </a>
-                                <button type="button" class="btn btn-glass-info hover-lift fw-semibold px-4 py-2 rounded-3">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-glass-info hover-lift fw-semibold px-4 py-2 rounded-3">
                                     <i class="bi bi-pencil me-2"></i>Edit
-                                </button>
-                                <button type="button" class="btn btn-glass-danger hover-lift fw-semibold px-4 py-2 rounded-3">
+                                </a>
+                                <button type="button" class="btn btn-glass-danger hover-lift fw-semibold px-4 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#softDeleteModal">
                                     <i class="bi bi-person-x me-2"></i>Deactivate
                                 </button>
+                                @if (User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value == "josephizang@gmail.com")
+                                {
+                                    <button type="button" class="btn btn-danger hover-lift fw-semibold px-4 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#hardDeleteModal">
+                                        <i class="bi bi-trash me-2"></i>Delete Permanently
+                                    </button>
+                                }
                             </div>
                         }
                         else
@@ -289,10 +295,88 @@
     </div>
 </div>
 
+<!-- Soft Delete Modal -->
+<div class="modal fade" id="softDeleteModal" tabindex="-1" aria-labelledby="softDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-effect border border-warning" style="background: rgba(22, 33, 62, 0.95);">
+            <div class="modal-header border-warning border-opacity-25">
+                <h5 class="modal-title text-warning fw-bold" id="softDeleteModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deactivation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-white">
+                <p>Are you sure you want to deactivate <strong class="text-warning">@Model.FullName</strong>?</p>
+                <p class="mb-0 small text-white-50">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This action will mark the member as inactive and prevent them from accessing the system. This can be reversed later.
+                </p>
+            </div>
+            <div class="modal-footer border-warning border-opacity-25">
+                <button type="button" class="btn btn-glass-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cancel
+                </button>
+                <form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-warning text-black fw-bold">
+                        <i class="bi bi-person-x me-1"></i>Yes, Deactivate
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hard Delete Modal (Super Admin Only) -->
+@if (User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value == "josephizang@gmail.com")
+{
+    <div class="modal fade" id="hardDeleteModal" tabindex="-1" aria-labelledby="hardDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-effect border border-danger" style="background: rgba(22, 33, 62, 0.95);">
+                <div class="modal-header border-danger border-opacity-25">
+                    <h5 class="modal-title text-danger fw-bold" id="hardDeleteModalLabel">
+                        <i class="bi bi-exclamation-octagon me-2"></i>Confirm Permanent Deletion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-white">
+                    <p class="text-danger fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        WARNING: This action is PERMANENT and IRREVERSIBLE!
+                    </p>
+                    <p>Are you sure you want to permanently delete <strong class="text-danger">@Model.FullName</strong>?</p>
+                    <p class="mb-0 small text-white-50">
+                        <i class="bi bi-info-circle me-1"></i>
+                        This will permanently remove all data associated with this member, including their Code of Conduct document. This action cannot be undone.
+                    </p>
+                </div>
+                <div class="modal-footer border-danger border-opacity-25">
+                    <button type="button" class="btn btn-glass-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                    </button>
+                    <form asp-action="HardDelete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger fw-bold">
+                            <i class="bi bi-trash me-1"></i>Yes, Delete Permanently
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <script>
-        const handleSpanClick = () => {
-            
-        }
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
     </script>
 }
