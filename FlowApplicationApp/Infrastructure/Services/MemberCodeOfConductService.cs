@@ -24,7 +24,7 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
         _logger = logger;
     }
 
-    public async Task<string> UploadMemberCodeOfConductAsync(IFormFile file, Guid memberId, CancellationToken cancellationToken = default)
+    public async Task<string> UploadMemberCodeOfConductAsync(IFormFile file, Guid memberId, CancellationToken cancellationToken)
     {
         // Validate file
         if (file == null || file.Length == 0)
@@ -75,7 +75,7 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
             // Save file
             await using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await file.CopyToAsync(stream, cancellationToken);
+                await file.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
             }
 
             // Update database
@@ -84,7 +84,7 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
             member.HasUploadedCodeOfConduct = true;
             member.CodeOfConductUploadedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation("Member {MemberId} uploaded Code of Conduct PDF: {FileName}", memberId, fileName);
 
@@ -97,20 +97,19 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
         }
     }
 
-    public async Task<bool> HasUploadedCodeOfConductAsync(Guid memberId, CancellationToken cancellationToken = default)
-    {
-        return await _context.FlowMembers
+    public async Task<bool> HasUploadedCodeOfConductAsync(Guid memberId, CancellationToken cancellationToken) =>
+            await _context.FlowMembers.AsNoTracking()
             .Where(m => m.Id == memberId)
             .Select(m => m.HasUploadedCodeOfConduct)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-    public async Task<FileStream?> GetMemberCodeOfConductAsync(Guid memberId, CancellationToken cancellationToken = default)
+    public async Task<FileStream?> GetMemberCodeOfConductAsync(Guid memberId, CancellationToken cancellationToken)
     {
-        var member = await _context.FlowMembers
+        var member = await _context.FlowMembers.AsNoTracking()
             .Where(m => m.Id == memberId)
             .Select(m => new { m.CodeOfConductPdfPath })
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
 
         if (member == null || string.IsNullOrEmpty(member.CodeOfConductPdfPath))
         {
@@ -155,7 +154,7 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
             member.HasUploadedCodeOfConduct = false;
             member.CodeOfConductUploadedAt = null;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation("Deleted Code of Conduct PDF for member {MemberId}", memberId);
 
@@ -168,12 +167,13 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
         }
     }
 
-    public async Task<string?> GetMemberCodeOfConductFileNameAsync(Guid memberId, CancellationToken cancellationToken = default)
+    public async Task<string?> GetMemberCodeOfConductFileNameAsync(Guid memberId, CancellationToken cancellationToken)
     {
-        var member = await _context.FlowMembers
+        var member = await _context.FlowMembers.AsNoTracking()
             .Where(m => m.Id == memberId)
             .Select(m => m.CodeOfConductPdfPath)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(member))
         {

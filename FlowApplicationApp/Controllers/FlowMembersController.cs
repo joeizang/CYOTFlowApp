@@ -403,7 +403,8 @@ namespace FlowApplicationApp.Controllers
 
             var member = await _context.FlowMembers
                 .Where(m => m.Id == model.Id && !m.IsDeleted)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
                 
             if (member == null)
             {
