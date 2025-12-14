@@ -1,15 +1,3 @@
-using FlowApplicationApp.Data;
-using FlowApplicationApp.Data.DomainModels;
-using FlowApplicationApp.Infrastructure.Extensions;
-using FlowApplicationApp.Infrastructure.Services;
-using FlowApplicationApp.ViewModels.Auditions;
-using FlowApplicationApp.ViewModels.FlowMembers;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 namespace FlowApplicationApp.Controllers
 {
     [Route("[controller]")]
@@ -100,7 +88,6 @@ namespace FlowApplicationApp.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAuditioner([Bind]CreateAuditionerInputModel inputModel, CancellationToken cancellationToken)
         {
-            Console.WriteLine(inputModel.ProfileImage.FileName);
             if (!ModelState.IsValid) return View("Index", inputModel);
             var validationResult = await _validator.ValidateAsync(inputModel, cancellationToken);
             if (!validationResult.IsValid)
@@ -114,7 +101,7 @@ namespace FlowApplicationApp.Controllers
             //save every image to the img folder and save the path to the database
             var entity = inputModel.MapToDomainModel();
             if (inputModel.ProfileImage != null && (inputModel.ProfileImage.Length > 0 
-                                                    && inputModel.ProfileImage.Length <800000))
+                                                    && inputModel.ProfileImage.Length <1024000))
             {
                 var pathForSaving = Path.GetFullPath(Path.Combine(hosting.ContentRootPath, "../../uploadFiles"));
                 var uniqueFileName = inputModel.GetProfileImageFileName();
