@@ -60,7 +60,7 @@ public class MemberCodeOfConductService : IMemberCodeOfConductService
 
             // Create directory structure: uploadFiles/code-of-conduct/members/{memberId}/
             var uploadPath = Path.GetFullPath(
-                Path.Combine(_environment.ContentRootPath, "../../uploadFiles/code-of-conduct/members", memberId.ToString())
+                Path.Combine(_environment.ContentRootPath, "../uploadFiles/code-of-conduct/members", memberId.ToString()) // server is different ../../ goes too far
             );
 
             if (!Directory.Exists(uploadPath))
