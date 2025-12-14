@@ -33,7 +33,7 @@ public class EditFlowMemberViewModel
     public string WhatsAppNumber { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "Biography is required")]
-    [StringLength(500, MinimumLength = 50, ErrorMessage = "Biography must be between 50 and 500 characters")]
+    [StringLength(1000, MinimumLength = 50, ErrorMessage = "Biography must be between 50 and 1000 characters")]
     [Display(Name = "Biography")]
     [DataType(DataType.MultilineText)]
     public string Bio { get; set; } = string.Empty;
