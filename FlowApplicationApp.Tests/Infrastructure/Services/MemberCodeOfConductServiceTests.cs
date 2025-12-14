@@ -61,7 +61,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
         var file = CreateMockPdfFile("test.pdf", 1024);
 
         // Act
-        var result = await _service.UploadMemberCodeOfConductAsync(file, memberId);
+        var result = await _service.UploadMemberCodeOfConductAsync(file, memberId, CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
@@ -82,7 +82,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => 
-            _service.UploadMemberCodeOfConductAsync(null!, memberId));
+            _service.UploadMemberCodeOfConductAsync(null!, memberId, CancellationToken.None));
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => 
-            _service.UploadMemberCodeOfConductAsync(file, memberId));
+            _service.UploadMemberCodeOfConductAsync(file, memberId, CancellationToken.None));
         Assert.Contains("exceeds maximum", exception.Message);
     }
 
@@ -129,7 +129,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => 
-            _service.UploadMemberCodeOfConductAsync(file, memberId));
+            _service.UploadMemberCodeOfConductAsync(file, memberId, CancellationToken.None));
         Assert.Contains("PDF files are allowed", exception.Message);
     }
 
@@ -142,7 +142,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => 
-            _service.UploadMemberCodeOfConductAsync(file, memberId));
+            _service.UploadMemberCodeOfConductAsync(file, memberId, CancellationToken.None));
         Assert.Contains("Member not found", exception.Message);
     }
 
@@ -164,7 +164,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _service.HasUploadedCodeOfConductAsync(memberId);
+        var result = await _service.HasUploadedCodeOfConductAsync(memberId, CancellationToken.None);
 
         // Assert
         Assert.True(result);
@@ -188,7 +188,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _service.HasUploadedCodeOfConductAsync(memberId);
+        var result = await _service.HasUploadedCodeOfConductAsync(memberId, CancellationToken.None);
 
         // Assert
         Assert.False(result);
@@ -245,7 +245,7 @@ public class MemberCodeOfConductServiceTests : IDisposable
         await _context.SaveChangesAsync();
 
         // Act
-        var result = await _service.GetMemberCodeOfConductFileNameAsync(memberId);
+        var result = await _service.GetMemberCodeOfConductFileNameAsync(memberId, CancellationToken.None);
 
         // Assert
         Assert.Equal(fileName, result);
